@@ -26,9 +26,20 @@ The site is **fully static** — no build step, no framework, no bundler. Edit H
 - **Custom domain:** `rest-mail.com`, configured via the `CNAME` file. Apex DNS A records point at GitHub Pages IPs.
 - **Analytics:** Google Analytics tag `UA-950385-34` at the bottom of `index.html`. (Note: this is a Universal Analytics property, sunset by Google in July 2023 — collection has stopped. The tag is preserved for historical continuity; switch to a GA4 property when ready.)
 
+## Published image
+
+Every push to `master` builds and publishes a container image to GHCR:
+
+```
+ghcr.io/rest-mail/website:latest          # always newest
+ghcr.io/rest-mail/website:YYYY.MM.DD      # immutable calver tag
+```
+
+The image is `nginx:alpine` with the static site baked in. Use it standalone or in the [rest-mail-server](https://github.com/rest-mail/rest-mail-server) local-dev environment.
+
 ## Local development
 
-Two ways to preview locally:
+Three ways to preview locally:
 
 ### Option A — any static server
 
@@ -37,14 +48,20 @@ python3 -m http.server 8090
 # then open http://localhost:8090
 ```
 
-### Option B — docker compose (mirrors the testbed setup)
+### Option B — published image
 
 ```bash
-docker compose up -d
+docker run --rm -p 8090:80 ghcr.io/rest-mail/website:latest
 # then open http://localhost:8090
 ```
 
-The compose file expects an external Docker network named `${COMPOSE_PROJECT_NAME:-rest-mail}_mailnet`. This is the testbed network used by the [rest-mail-server](https://github.com/rest-mail/rest-mail-server) local development environment, allowing the website to be reached at `restmail.localhost` via the testbed's reverse proxy. If you're running the website in isolation, use Option A instead.
+### Option C — docker compose (mirrors the testbed setup)
+
+```bash
+docker compose up -d
+```
+
+The compose file expects an external Docker network named `${COMPOSE_PROJECT_NAME:-rest-mail}_mailnet`, used by the [rest-mail-server](https://github.com/rest-mail/rest-mail-server) testbed. The website becomes reachable at `restmail.localhost` via the testbed's reverse proxy. For isolated preview, use Option A or B.
 
 ## Updating
 
