@@ -1,0 +1,16 @@
+apiVersion: v2
+name: website
+description: |
+  rest-mail.com: the project's own site, and the two files a mail server's
+  owner needs from it — the page a setup link lands on when the app is not
+  there to take it, and the association file Apple reads to decide the app
+  should take it.
+type: application
+# The chart package. Moves when the templates change, not when the site does.
+version: 0.1.0
+# The site this chart deploys, by the image tag the website repository
+# publishes on every push to master.
+appVersion: "latest"
+home: https://rest-mail.com
+sources:
+  - https://github.com/rest-mail/website

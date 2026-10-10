@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim your server — REST Mail</title>
+  <meta name="description" content="Open a REST Mail setup link on the phone where the app is installed, and it claims your freshly installed mail server.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <!-- Deliberately self-contained: no fonts, no analytics, nothing from
+       anywhere else. A setup link carries a code that claims a mail server,
+       and no third party gets to be in the room when one is opened. -->
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0; padding: 2.5rem 1.25rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6; color: #1a1a1a; background: #f8f7f4;
+      display: flex; justify-content: center;
+    }
+    main { max-width: 34rem; width: 100%; }
+    h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+    p { margin: 0 0 1rem; }
+    .code {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1.35rem; letter-spacing: 0.04em; word-break: break-all;
+      background: #fff; border: 1px solid #ddd9d0; border-radius: 8px;
+      padding: 0.9rem 1rem; margin: 0 0 1rem;
+    }
+    .muted { color: #5c5852; font-size: 0.95rem; }
+    ol { padding-left: 1.2rem; }
+    li { margin-bottom: 0.4rem; }
+    a { color: #8a5a2b; }
+    @media (prefers-color-scheme: dark) {
+      body { color: #ece9e3; background: #16150f; }
+      .code { background: #211f18; border-color: #3a362c; }
+      .muted { color: #a8a299; }
+      a { color: #d2a36a; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Claim your mail server</h1>
+
+    <div id="with-code" hidden>
+      <p>This link carries the setup code for a freshly installed REST Mail
+        server. With the app installed, opening it on your phone starts the
+        setup. If you are reading this page instead, the app did not open:
+        enter the code by hand.</p>
+      <p class="muted">Setup code</p>
+      <p class="code" id="code"></p>
+      <p class="muted" id="server" hidden></p>
+      <ol>
+        <li>Open REST Mail on your phone.</li>
+        <li>Choose <strong>Set up a new server</strong>.</li>
+        <li>Enter your server's address, then this code.</li>
+      </ol>
+      <p class="muted">The code works once, and only until your server is
+        claimed or restarted. Treat it like a password: whoever uses it first
+        becomes the server's admin.</p>
+    </div>
+
+    <div id="without-code">
+      <p>Setup links are made by a freshly installed REST Mail server, which
+        prints one — with a QR code — every time it starts, until somebody
+        claims it. Open the link on the phone where the app is installed.</p>
+      <p class="muted">There is no setup code in this link, so there is nothing
+        to do here.</p>
+    </div>
+
+    <p><a href="/">About REST Mail</a></p>
+  </main>
+
+  <script>
+    // The code travels after the `#`, which browsers never send to a web
+    // server: rest-mail.com cannot see it, and neither can its logs.
+    (function () {
+      var parameters = new URLSearchParams(location.hash.replace(/^#/, ''));
+      var code = (parameters.get('token') || '').trim();
+      if (!code) return;
+      document.getElementById('code').textContent = code;
+      var server = parameters.get('server');
+      if (server) {
+        var line = document.getElementById('server');
+        line.textContent = 'for ' + server;
+        line.hidden = false;
+      }
+      document.getElementById('with-code').hidden = false;
+      document.getElementById('without-code').hidden = true;
+    })();
+  </script>
+</body>
+</html>
