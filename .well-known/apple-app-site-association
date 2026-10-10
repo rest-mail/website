@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["43UMKXZ8P4.com.antimatterstudios.restmail"],
+        "components": [
+          {
+            "/": "/setup",
+            "comment": "Claiming a freshly installed server opens the app."
+          },
+          {
+            "/": "/setup/",
+            "comment": "The same, written with a trailing slash."
+          }
+        ]
+      }
+    ]
+  }
+}

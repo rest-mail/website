@@ -1,0 +1,35 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/rest-mail/website
+  # Empty: the chart's appVersion. The site publishes a CalVer tag on every
+  # push, so pin one here to say which of them is live.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  # Every name the site answers to. The first is where it lives; the rest are
+  # redirected to it by whoever terminates TLS, or simply serve the same files.
+  hosts: []
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: ""
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 24Mi
+  limits:
+    memory: 96Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podAnnotations: {}
