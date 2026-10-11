@@ -1,6 +1,6 @@
 # rest-mail.com
 
-The public-facing website for the **REST Mail** project — served at https://rest-mail.com via GitHub Pages from this repository's `master` branch.
+The public-facing website for the **REST Mail** project — served at https://rest-mail.com from the project's own cluster, built from this repository's `master` branch.
 
 REST Mail replaces legacy mail server protocols (SMTP, IMAP, POP3) with a modern REST API. The product source lives at [`rest-mail/rest-mail-server`](https://github.com/rest-mail/rest-mail-server); this repository is **only the marketing site**.
 
@@ -16,7 +16,6 @@ REST Mail replaces legacy mail server protocols (SMTP, IMAP, POP3) with a modern
 ├── .well-known/                  # apple-app-site-association: setup links open the app
 ├── nginx/default.conf            # content types and headers the files above need
 ├── charts/website/               # how the site is deployed
-├── CNAME                         # rest-mail.com — DO NOT remove (breaks GitHub Pages custom domain)
 ├── docker-compose.yml            # local dev: nginx serving the static files
 ├── docker-compose.override.yml   # local dev: read-write volume mount
 └── README.md
@@ -27,7 +26,6 @@ The site is **fully static** — no build step, no framework, no bundler. Edit H
 ## Hosting
 
 - **Production:** the project's own cluster, from the image this repository publishes, installed by `charts/website` (see below). Pushing to `master` builds a new image; the deployment says which one is live.
-- **Previously:** GitHub Pages from `master`, which is what `CNAME` is for. It stays until the apex DNS points at the cluster, so that the site never has nowhere to be. `.nojekyll` is there because Jekyll drops directories whose name starts with a dot, which is every one of `.well-known` — without it Pages answers 404 for the file that makes setup links open the app.
 - **Analytics:** Google Analytics tag `UA-950385-34` at the bottom of `index.html`. (Note: this is a Universal Analytics property, sunset by Google in July 2023 — collection has stopped. The tag is preserved for historical continuity; switch to a GA4 property when ready.)
 
 ## Claiming a mail server
@@ -99,7 +97,7 @@ The compose file expects an external Docker network named `${COMPOSE_PROJECT_NAM
 
 - Edit files directly on `master` (or via PR — your choice).
 - Commit and push.
-- GitHub Pages rebuilds automatically.
+- That builds a new image (`ghcr.io/rest-mail/website:YYYY.MM.DD[.N]`). It goes live when the deployment pins it: `websiteImageTag` in antimatter-vps's `Pulumi.prod.yaml`.
 
 ## License
 
