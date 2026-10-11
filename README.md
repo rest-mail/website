@@ -27,7 +27,7 @@ The site is **fully static** — no build step, no framework, no bundler. Edit H
 ## Hosting
 
 - **Production:** the project's own cluster, from the image this repository publishes, installed by `charts/website` (see below). Pushing to `master` builds a new image; the deployment says which one is live.
-- **Previously:** GitHub Pages from `master`, which is what `CNAME` is for. It stays until the apex DNS points at the cluster, so that the site never has nowhere to be.
+- **Previously:** GitHub Pages from `master`, which is what `CNAME` is for. It stays until the apex DNS points at the cluster, so that the site never has nowhere to be. `.nojekyll` is there because Jekyll drops directories whose name starts with a dot, which is every one of `.well-known` — without it Pages answers 404 for the file that makes setup links open the app.
 - **Analytics:** Google Analytics tag `UA-950385-34` at the bottom of `index.html`. (Note: this is a Universal Analytics property, sunset by Google in July 2023 — collection has stopped. The tag is preserved for historical continuity; switch to a GA4 property when ready.)
 
 ## Claiming a mail server
