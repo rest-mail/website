@@ -19,9 +19,9 @@ has   "service"           "$tmp/plain.yaml" "kind: Service"
 hasnt "no ingress by default" "$tmp/plain.yaml" "kind: Ingress"
 
 echo "== the image is pinned where it is asked to be =="
-has "appVersion by default" "$tmp/plain.yaml" "ghcr.io/rest-mail/website:latest"
-helm template website "$CHART_DIR" --set image.tag=2026.10.10 > "$tmp/pinned.yaml"
-has "an explicit tag"       "$tmp/pinned.yaml" "ghcr.io/rest-mail/website:2026.10.10"
+has "appVersion by default" "$tmp/plain.yaml" "ghcr.io/rest-mail/website:0.1.0"
+helm template website "$CHART_DIR" --set image.tag=0.2.0 > "$tmp/pinned.yaml"
+has "an explicit tag"       "$tmp/pinned.yaml" "ghcr.io/rest-mail/website:0.2.0"
 
 echo "== the names the site answers to =="
 helm template website "$CHART_DIR" --set ingress.enabled=true \
