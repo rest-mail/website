@@ -12,8 +12,8 @@ REST Mail replaces legacy mail server protocols (SMTP, IMAP, POP3) with a modern
 ├── css/style.css                 # all styles
 ├── js/main.js                    # animation, nav toggle, etc.
 ├── favicon.svg
-├── setup/index.html              # where a server's setup link lands
-├── .well-known/                  # apple-app-site-association: setup links open the app
+├── setup/index.html              # where the installer's sign-in link lands
+├── .well-known/                  # apple-app-site-association: sign-in links open the app
 ├── nginx/default.conf            # content types and headers the files above need
 ├── charts/website/               # how the site is deployed
 ├── docker-compose.yml            # local dev: nginx serving the static files
@@ -28,24 +28,30 @@ The site is **fully static** — no build step, no framework, no bundler. Edit H
 - **Production:** the project's own cluster, from the image this repository publishes, installed by `charts/website` (see below). Pushing to `master` builds a new image; the deployment says which one is live.
 - **Analytics:** Google Analytics tag `UA-950385-34` at the bottom of `index.html`. (Note: this is a Universal Analytics property, sunset by Google in July 2023 — collection has stopped. The tag is preserved for historical continuity; switch to a GA4 property when ready.)
 
-## Claiming a mail server
+## Signing in to a new mail server
 
-A freshly installed rest-mail server prints a setup code, with a QR code, every
-time it starts until somebody claims it. Those links are ordinary web links so
-that they are tappable anywhere — `https://rest-mail.com/setup#token=CODE` —
-and this site serves both halves of what that needs:
+The rest-mail installer shows the first admin's password once, as text and as a
+QR code of a sign-in link. The link is an ordinary web link so that a phone's
+camera offers to open it and it is tappable anywhere —
+`https://rest-mail.com/setup#server=URL&username=NAME&password=PASSWORD` — and
+this site serves both halves of what that needs:
 
 - `.well-known/apple-app-site-association` tells iOS that the link belongs to
   the rest-mail app, so tapping it opens the app rather than this site. It is
   served as `application/json` (`nginx/default.conf`), which Apple requires and
   which a file with no extension does not get by default.
-- `setup/index.html` is where the link lands when the app is not installed. It
-  shows the code so it can be typed in by hand.
+- `setup/index.html` is where the link lands when the app did not take it: on
+  Android, which has no verified link to the app, or in a browser. It offers
+  **Open in the rest-mail app** (`rest-mail://setup?…`, which Android opens),
+  shows the sign-in so it can be typed by hand, and takes it out of the address
+  bar and the tab's history.
 
-A setup code claims a mail server, so a link carries it after the `#`, which
-browsers never send to a web server: this site cannot see one, and neither can
-its logs. For the same reason the setup page loads nothing from anywhere else,
-and is the one page here with no analytics on it.
+The link carries a mail server's admin password, so it rides after the `#`,
+which browsers never send to a web server: this site cannot see one, and neither
+can its logs. For the same reason the setup page loads nothing from anywhere
+else, and is the one page here with no analytics on it. (Servers before
+rest-mail 0.7 printed setup codes instead; the page says that nothing redeems
+one any more.)
 
 ## The chart
 

@@ -4,9 +4,9 @@ COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY index.html favicon.svg /usr/share/nginx/html/
 COPY css/ /usr/share/nginx/html/css/
 COPY js/ /usr/share/nginx/html/js/
-# Claiming a freshly installed server: the page a setup link lands on when the
-# app is not there to take it, and the file Apple reads to decide that the app
-# should take it.
+# Signing in to a freshly installed server: the page the installer's sign-in
+# link lands on when the app is not there to take it, and the file Apple reads
+# to decide that the app should take it.
 COPY setup/ /usr/share/nginx/html/setup/
 COPY .well-known/ /usr/share/nginx/html/.well-known/
 
