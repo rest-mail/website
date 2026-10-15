@@ -120,7 +120,7 @@
       if (server) app.set('server', server);
       app.set('username', username);
       app.set('password', password);
-      document.getElementById('open').href = 'restmail://setup?' + app.toString();
+      document.getElementById('open').href = 'rest-mail://setup?' + app.toString();
       document.getElementById('with-sign-in').hidden = false;
       document.getElementById('without-sign-in').hidden = true;
     })();
