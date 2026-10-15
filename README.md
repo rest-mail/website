@@ -58,11 +58,11 @@ whole product. `charts/website/tests/render-test.sh` renders it.
 
 ## Published image
 
-Every push to `master` builds and publishes a container image to GHCR:
+Tagging `vX.Y.Z` publishes that release to GHCR; every push to `master` refreshes `latest`:
 
 ```
-ghcr.io/rest-mail/website:latest          # always newest
-ghcr.io/rest-mail/website:YYYY.MM.DD      # immutable calver tag
+ghcr.io/rest-mail/website:latest          # newest master build; pin a release instead
+ghcr.io/rest-mail/website:X.Y.Z          # a release: git tag vX.Y.Z publishes it
 ```
 
 The image is `nginx:alpine` with the static site baked in. Use it standalone or in the [rest-mail-server](https://github.com/rest-mail/rest-mail-server) local-dev environment.
