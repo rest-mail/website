@@ -11,9 +11,9 @@ design, and every release carries all three:
 
 | `design` | Direction |
 |---|---|
-| `safe` | A · Cobalt Editorial: serif headlines, two-column grid, cobalt accent |
+| `safe` | A · Cobalt Editorial: serif headlines, two-column grid, cobalt accent (the default) |
 | `bold` | B · Acid Tabloid: oversized type, thick rules, acid-lime accent |
-| `experimental` | C · Magenta Zine: stickers, ASCII diagrams, magenta accent (the default) |
+| `experimental` | C · Magenta Zine: stickers, ASCII diagrams, magenta accent |
 
 Which one rest-mail.com shows is the deployment's choice, not the build's: the
 chart's `design` value. Switching is a change to that one setting, with no new
@@ -94,7 +94,7 @@ The image is `nginx:alpine` with the built site baked in. `REST_MAIL_DESIGN` (`s
 ```bash
 npm install
 npm run dev
-# then open http://localhost:5173/?design=safe (or bold, or experimental)
+# then open http://localhost:5173/ (or ?design=bold, ?design=experimental)
 ```
 
 ### Option B — published image

@@ -24,7 +24,7 @@ helm template website "$CHART_DIR" --set image.tag=0.3.0 > "$tmp/pinned.yaml"
 has "an explicit tag"       "$tmp/pinned.yaml" "ghcr.io/rest-mail/website:0.3.0"
 
 echo "== which design is live =="
-has "experimental by default" "$tmp/plain.yaml" 'value: "experimental"'
+has "safe by default" "$tmp/plain.yaml" 'value: "safe"'
 helm template website "$CHART_DIR" --set design=bold > "$tmp/bold.yaml"
 has "another when asked"      "$tmp/bold.yaml" 'value: "bold"'
 if helm template website "$CHART_DIR" --set design=fancy > /dev/null 2>&1; then

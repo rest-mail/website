@@ -4,7 +4,7 @@ replicaCount: 2
 # (Acid Tabloid) or experimental (Magenta Zine). Every release of the site
 # carries all three, so this is the only thing to change to switch; anyone
 # can look at the others with ?design=safe and so on.
-design: experimental
+design: safe
 
 image:
   repository: ghcr.io/rest-mail/website

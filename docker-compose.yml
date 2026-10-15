@@ -7,7 +7,7 @@ services:
     build:
       context: .
     environment:
-      REST_MAIL_DESIGN: ${REST_MAIL_DESIGN:-experimental}
+      REST_MAIL_DESIGN: ${REST_MAIL_DESIGN:-safe}
     restart: unless-stopped
     labels:
       - docker-proxy.website.host=restmail.localhost

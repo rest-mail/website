@@ -29,7 +29,7 @@ export function chooseDesign(search, deployed) {
   const asked = new URLSearchParams(search).get("design");
   if (asked in designs) return asked;
   if (deployed in designs) return deployed;
-  return "experimental";
+  return "safe";
 }
 
 const Design = designs[chooseDesign(window.location.search, window.REST_MAIL_DESIGN)];

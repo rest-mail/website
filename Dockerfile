@@ -13,7 +13,7 @@ FROM nginx:alpine
 # Which design is live: safe, bold or experimental. The chart sets it from its
 # `design` value; nginx writes it into /design.js at startup
 # (nginx/templates/default.conf.template).
-ENV REST_MAIL_DESIGN=experimental
+ENV REST_MAIL_DESIGN=safe
 
 COPY nginx/templates/ /etc/nginx/templates/
 COPY --from=build /src/dist/ /usr/share/nginx/html/
