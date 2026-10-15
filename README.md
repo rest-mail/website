@@ -42,7 +42,7 @@ this site serves both halves of what that needs:
   which a file with no extension does not get by default.
 - `setup/index.html` is where the link lands when the app did not take it: on
   Android, which has no verified link to the app, or in a browser. It offers
-  **Open in the REST Mail app** (`restmail://setup?…`, which Android opens),
+  **Open in the rest-mail app** (`restmail://setup?…`, which Android opens),
   shows the sign-in so it can be typed by hand, and takes it out of the address
   bar and the tab's history.
 
