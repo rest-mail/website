@@ -1,5 +1,11 @@
 replicaCount: 2
 
+# Which of the site's three designs is live: safe (Cobalt Editorial), bold
+# (Acid Tabloid) or experimental (Magenta Zine). Every release of the site
+# carries all three, so this is the only thing to change to switch; anyone
+# can look at the others with ?design=safe and so on.
+design: experimental
+
 image:
   repository: ghcr.io/rest-mail/website
   # Empty: the chart's appVersion, a SemVer release of the site. Set it to

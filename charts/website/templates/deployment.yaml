@@ -26,6 +26,9 @@ spec:
         - name: website
           image: {{ include "website.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REST_MAIL_DESIGN
+              value: {{ include "website.design" . | quote }}
           ports:
             - name: http
               containerPort: 80

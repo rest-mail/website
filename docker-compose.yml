@@ -1,8 +1,13 @@
 services:
   website:
-    image: nginx:alpine
+    # The image this repository publishes, built from the checkout: the site is
+    # compiled inside it, so there is nothing to mount. `npm run dev` is the way
+    # to edit with live reload.
+    image: rest-mail-website:dev
     build:
       context: .
+    environment:
+      REST_MAIL_DESIGN: ${REST_MAIL_DESIGN:-experimental}
     restart: unless-stopped
     labels:
       - docker-proxy.website.host=restmail.localhost
@@ -10,8 +15,6 @@ services:
       - docker-proxy.website.path=/
     ports:
       - "8090:80"
-    volumes:
-      - ./:/usr/share/nginx/html:ro
     networks:
       mailnet:
         ipv4_address: 10.99.0.26

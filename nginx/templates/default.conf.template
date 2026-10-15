@@ -1,4 +1,9 @@
 # What nginx serves rest-mail.com with, on top of the image's defaults.
+#
+# A template: at startup the nginx image fills in ${REST_MAIL_DESIGN} from the
+# container's environment (the chart's `design` value) and writes the result
+# to conf.d. Only variables that are set are filled in, so nginx's own $uri
+# and the like pass through untouched.
 server {
     listen 80;
     server_name _;
@@ -20,6 +25,21 @@ server {
         add_header Referrer-Policy no-referrer always;
         add_header X-Content-Type-Options nosniff always;
         try_files $uri $uri/ $uri/index.html =404;
+    }
+
+    # Which of the three designs is live. The page loads this before anything
+    # else; it is never cached, so a change of setting shows on the next visit.
+    location = /design.js {
+        default_type application/javascript;
+        add_header Cache-Control "no-cache" always;
+        return 200 'window.REST_MAIL_DESIGN = "${REST_MAIL_DESIGN}";\n';
+    }
+
+    # The built assets carry a hash of their contents in their names, so any
+    # one of them can be cached for good.
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+        try_files $uri =404;
     }
 
     location / {

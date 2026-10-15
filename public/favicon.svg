@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#f0ece2"></rect>
+  <rect x="8" y="14" width="48" height="36" fill="#15110d"></rect>
+  <path d="M8 14 L32 34 L56 14" stroke="#ff2d6f" stroke-width="3" fill="none"></path>
+  <text x="32" y="46" text-anchor="middle" font-family="monospace" font-size="10" font-weight="700" fill="#ff2d6f">REST</text>
+</svg>

@@ -19,9 +19,18 @@ has   "service"           "$tmp/plain.yaml" "kind: Service"
 hasnt "no ingress by default" "$tmp/plain.yaml" "kind: Ingress"
 
 echo "== the image is pinned where it is asked to be =="
-has "appVersion by default" "$tmp/plain.yaml" "ghcr.io/rest-mail/website:0.1.0"
-helm template website "$CHART_DIR" --set image.tag=0.2.0 > "$tmp/pinned.yaml"
-has "an explicit tag"       "$tmp/pinned.yaml" "ghcr.io/rest-mail/website:0.2.0"
+has "appVersion by default" "$tmp/plain.yaml" "ghcr.io/rest-mail/website:0.2.0"
+helm template website "$CHART_DIR" --set image.tag=0.3.0 > "$tmp/pinned.yaml"
+has "an explicit tag"       "$tmp/pinned.yaml" "ghcr.io/rest-mail/website:0.3.0"
+
+echo "== which design is live =="
+has "experimental by default" "$tmp/plain.yaml" 'value: "experimental"'
+helm template website "$CHART_DIR" --set design=bold > "$tmp/bold.yaml"
+has "another when asked"      "$tmp/bold.yaml" 'value: "bold"'
+if helm template website "$CHART_DIR" --set design=fancy > /dev/null 2>&1; then
+  fail "expected a design that does not exist to be refused"
+fi
+pass "a design that does not exist is refused"
 
 echo "== the names the site answers to =="
 helm template website "$CHART_DIR" --set ingress.enabled=true \
