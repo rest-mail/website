@@ -17,6 +17,7 @@ import { Route as SecurityRouteImport } from './routes/security'
 import { Route as SecurityDottxtRouteImport } from './routes/security[.]txt'
 import { Route as SetupRouteImport } from './routes/setup'
 import { Route as DotwellKnownAppleAppSiteAssociationRouteImport } from './routes/[.]well-known/apple-app-site-association'
+import { Route as DotwellKnownMicrosoftIdentityAssociationDotjsonRouteImport } from './routes/[.]well-known/microsoft-identity-association[.]json'
 import { Route as DotwellKnownSecurityDottxtRouteImport } from './routes/[.]well-known/security[.]txt'
 import { Route as SetupIndexDothtmlRouteImport } from './routes/setup/index[.]html'
 
@@ -61,6 +62,12 @@ const DotwellKnownAppleAppSiteAssociationRoute =
     path: '/.well-known/apple-app-site-association',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotwellKnownMicrosoftIdentityAssociationDotjsonRoute =
+  DotwellKnownMicrosoftIdentityAssociationDotjsonRouteImport.update({
+    id: '/.well-known/microsoft-identity-association.json',
+    path: '/.well-known/microsoft-identity-association.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DotwellKnownSecurityDottxtRoute =
   DotwellKnownSecurityDottxtRouteImport.update({
     id: '/.well-known/security.txt',
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/security.txt': typeof SecurityDottxtRoute
   '/setup': typeof SetupRouteWithChildren
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
+  '/.well-known/microsoft-identity-association.json': typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   '/.well-known/security.txt': typeof DotwellKnownSecurityDottxtRoute
   '/setup/index.html': typeof SetupIndexDothtmlRoute
 }
@@ -94,6 +102,7 @@ export interface FileRoutesByTo {
   '/security.txt': typeof SecurityDottxtRoute
   '/setup': typeof SetupRouteWithChildren
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
+  '/.well-known/microsoft-identity-association.json': typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   '/.well-known/security.txt': typeof DotwellKnownSecurityDottxtRoute
   '/setup/index.html': typeof SetupIndexDothtmlRoute
 }
@@ -107,6 +116,7 @@ export interface FileRoutesById {
   '/security.txt': typeof SecurityDottxtRoute
   '/setup': typeof SetupRouteWithChildren
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
+  '/.well-known/microsoft-identity-association.json': typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   '/.well-known/security.txt': typeof DotwellKnownSecurityDottxtRoute
   '/setup/index.html': typeof SetupIndexDothtmlRoute
 }
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/security.txt'
     | '/setup'
     | '/.well-known/apple-app-site-association'
+    | '/.well-known/microsoft-identity-association.json'
     | '/.well-known/security.txt'
     | '/setup/index.html'
   fileRoutesByTo: FileRoutesByTo
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/security.txt'
     | '/setup'
     | '/.well-known/apple-app-site-association'
+    | '/.well-known/microsoft-identity-association.json'
     | '/.well-known/security.txt'
     | '/setup/index.html'
   id:
@@ -145,6 +157,7 @@ export interface FileRouteTypes {
     | '/security.txt'
     | '/setup'
     | '/.well-known/apple-app-site-association'
+    | '/.well-known/microsoft-identity-association.json'
     | '/.well-known/security.txt'
     | '/setup/index.html'
   fileRoutesById: FileRoutesById
@@ -158,6 +171,7 @@ export interface RootRouteChildren {
   SecurityDottxtRoute: typeof SecurityDottxtRoute
   SetupRoute: typeof SetupRouteWithChildren
   DotwellKnownAppleAppSiteAssociationRoute: typeof DotwellKnownAppleAppSiteAssociationRoute
+  DotwellKnownMicrosoftIdentityAssociationDotjsonRoute: typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   DotwellKnownSecurityDottxtRoute: typeof DotwellKnownSecurityDottxtRoute
 }
 
@@ -219,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotwellKnownAppleAppSiteAssociationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/microsoft-identity-association.json': {
+      id: '/.well-known/microsoft-identity-association.json'
+      path: '/.well-known/microsoft-identity-association.json'
+      fullPath: '/.well-known/microsoft-identity-association.json'
+      preLoaderRoute: typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/security.txt': {
       id: '/.well-known/security.txt'
       path: '/.well-known/security.txt'
@@ -256,6 +277,8 @@ const rootRouteChildren: RootRouteChildren = {
   SetupRoute: SetupRouteWithChildren,
   DotwellKnownAppleAppSiteAssociationRoute:
     DotwellKnownAppleAppSiteAssociationRoute,
+  DotwellKnownMicrosoftIdentityAssociationDotjsonRoute:
+    DotwellKnownMicrosoftIdentityAssociationDotjsonRoute,
   DotwellKnownSecurityDottxtRoute: DotwellKnownSecurityDottxtRoute,
 }
 export const routeTree = rootRouteImport

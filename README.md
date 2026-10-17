@@ -47,7 +47,8 @@ footer, drawn by each design its own way, link them all.
 │   │   ├── index.tsx             # /
 │   │   ├── about.tsx, privacy.tsx, contact.tsx, security.tsx
 │   │   ├── setup.ts, setup/      # /setup, /setup/index.html: setup/index.html, as written
-│   │   ├── [.]well-known/        # apple-app-site-association, security.txt
+│   │   ├── [.]well-known/        # apple-app-site-association, security.txt,
+│   │   │                         # microsoft-identity-association.json
 │   │   └── security[.]txt.ts     # the old place for security.txt: a redirect
 │   ├── designs/                  # Safe.tsx, Bold.tsx, Experimental.tsx: each one's
 │   │                             # header and footer, home page and pages of text
@@ -58,7 +59,8 @@ footer, drawn by each design its own way, link them all.
 │   └── styles/                   # base.css for every page, design-<name>.css for each design
 ├── public/                       # copied as is: the favicon
 ├── setup/index.html              # where a server's setup link lands
-├── .well-known/                  # apple-app-site-association: setup links open the app
+├── .well-known/                  # apple-app-site-association: setup links open the app;
+│                                 # microsoft-identity-association.json: the publisher domain
 ├── server.mjs                    # the production server: serves the build, logs no requests
 ├── test/                         # what the built server must do, checked with no JavaScript
 ├── charts/website/               # how the site is deployed
@@ -105,6 +107,18 @@ A setup code claims a mail server, so a link carries it after the `#`, which
 browsers never send to a web server: this site cannot see one, and neither can
 its logs. For the same reason the setup page loads nothing from anywhere else,
 and nothing else on the site does either.
+
+## Publisher domain
+
+The app's Sign in with Microsoft goes through a Microsoft Entra app
+registration. Its consent screen names the publisher, and it can only say
+rest-mail.com once Entra has checked that the domain belongs to whoever owns
+the registration. Entra checks that by fetching
+`/.well-known/microsoft-identity-association.json`, which lists the
+registration's Application (client) id. The route that serves it is
+`src/routes/[.]well-known/microsoft-identity-association[.]json.ts`, and the
+file is sent exactly as written, as JSON. Another registration means another
+entry in `associatedApplications`.
 
 ## The chart
 
