@@ -1,6 +1,6 @@
-import React from "react";
-import Handshake from "../Handshake.jsx";
-import "../styles/option-safe.css";
+import type { CSSProperties, ReactNode } from "react";
+import Handshake from "../Handshake";
+import { Brand, GitHubLink, PageLinks, type DocProps, type DocSectionProps, type Tweaks } from "./common";
 
 
 /**
@@ -8,38 +8,12 @@ import "../styles/option-safe.css";
  * "The Editorial". Big serif headline, mono micro-labels, two-column dense
  * grid, electric cobalt accent. Confident but not loud.
  */
-const OptionSafe = ({ tweaks = {} }) => {
-  const accent = tweaks.accentSafe || "#1840ff";
-  const density = tweaks.density || "comfortable";
+const OptionSafe = ({ tweaks = {} }: { tweaks?: Tweaks }) => {
   const speed = tweaks.speed || 700;
   const cheeky = tweaks.cheeky !== false;
 
   return (
-    <div
-      className={`rm-page rm-safe density-${density}`}
-      style={{ "--accent": accent, "--accent-ink": "#fff" }}
-    >
-      {/* Top bar */}
-      <header className="safe-nav">
-        <div className="safe-nav-row">
-          <div className="safe-nav-brand">
-            <span className="safe-mark">▮</span>
-            <span>REST Mail</span>
-          </div>
-          <nav className="safe-nav-links">
-            <a href="#why">Why</a>
-            <a href="#how">How</a>
-            <a href="#api">API</a>
-            <a href="#stack">Stack</a>
-          </nav>
-          <div className="safe-nav-meta">
-            <span className="rm-eyebrow">v1.0 · MIT</span>
-            <a className="rm-btn rm-btn-accent" href="#">★ GitHub</a>
-          </div>
-        </div>
-        <div className="rm-rule" />
-      </header>
-
+    <>
       {/* Masthead */}
       <section className="safe-masthead">
         <div className="safe-mast-grid">
@@ -278,6 +252,42 @@ const OptionSafe = ({ tweaks = {} }) => {
           </div>
         </div>
       </section>
+    </>
+  );
+};
+
+/**
+ * Everything around a page in this design: the top bar and the footer, the
+ * same on every page.
+ */
+export const SafeChrome = ({ tweaks = {}, children }: { tweaks?: Tweaks; children: ReactNode }) => {
+  const accent = tweaks.accentSafe || "#1840ff";
+  const density = tweaks.density || "comfortable";
+
+  return (
+    <div
+      className={`rm-page rm-safe density-${density}`}
+      style={{ "--accent": accent, "--accent-ink": "#fff" } as CSSProperties}
+    >
+      {/* Top bar */}
+      <header className="safe-nav">
+        <div className="safe-nav-row">
+          <Brand className="safe-nav-brand">
+            <span className="safe-mark">▮</span>
+            <span>REST Mail</span>
+          </Brand>
+          <nav className="safe-nav-links">
+            <PageLinks />
+          </nav>
+          <div className="safe-nav-meta">
+            <span className="rm-eyebrow">v1.0 · MIT</span>
+            <GitHubLink className="rm-btn rm-btn-accent">★ GitHub</GitHubLink>
+          </div>
+        </div>
+        <div className="rm-rule" />
+      </header>
+
+      <main>{children}</main>
 
       <div className="rm-rule" />
 
@@ -288,9 +298,51 @@ const OptionSafe = ({ tweaks = {} }) => {
           <div className="safe-foot-tag">Because the protocol is old, and needs to take a REST.</div>
           <div className="safe-foot-meta rm-eyebrow">MIT · github.com/rest-mail · rest-mail.com</div>
         </div>
+        <nav className="site-foot-links rm-eyebrow">
+          <PageLinks home />
+        </nav>
       </footer>
     </div>
   );
 };
+
+/** A page of text in this design: the masthead line, then numbered sections. */
+export const SafeDoc = ({ eyebrow, kicker, title, lede, children }: DocProps) => (
+  <article className="doc doc-safe">
+    <section className="safe-masthead">
+      <div className="safe-mast-grid">
+        <div className="safe-mast-meta">
+          <div className="rm-eyebrow">{eyebrow}</div>
+        </div>
+        {kicker && <div className="safe-mast-eyebrow">{kicker}</div>}
+      </div>
+      <div className="rm-rule-thin" />
+    </section>
+    <header className="safe-hero doc-hero">
+      <h1 className="doc-title">{title}</h1>
+      {lede && (
+        <div className="safe-hero-deck doc-lede">
+          <p>{lede}</p>
+        </div>
+      )}
+    </header>
+    {children}
+  </article>
+);
+
+export const SafeDocSection = ({ title, id, children }: DocSectionProps) => (
+  <>
+    <div className="rm-rule" />
+    <section className="safe-section doc-section" id={id}>
+      <div className="safe-section-grid">
+        <div className="safe-section-label">
+          <div className="rm-eyebrow doc-num" />
+          <h2>{title}</h2>
+        </div>
+        <div className="safe-section-body doc-body">{children}</div>
+      </div>
+    </section>
+  </>
+);
 
 export default OptionSafe;

@@ -3,3 +3,5 @@ dist
 .git
 charts
 media
+test
+.tanstack

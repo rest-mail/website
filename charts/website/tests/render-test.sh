@@ -32,6 +32,29 @@ if helm template website "$CHART_DIR" --set design=fancy > /dev/null 2>&1; then
 fi
 pass "a design that does not exist is refused"
 
+echo "== where people write to the project =="
+has "hello@ by default" "$tmp/plain.yaml" 'value: "hello@rest-mail.com"'
+helm template website "$CHART_DIR" --set contact=privacy@example.org > "$tmp/contact.yaml"
+has "another when asked" "$tmp/contact.yaml" 'value: "privacy@example.org"'
+# --set-string splits on commas unless they are escaped, hence the \, below.
+for bad in "nobody" "two words@example.org" "a@b" 'x@example.org\,y@example.org' "x@example.org>"; do
+  if helm template website "$CHART_DIR" --set-string "contact=$bad" > "$tmp/bad.out" 2>&1; then
+    fail "expected a contact that is not an address to be refused: $bad"
+  fi
+  grep -Fq "contact must be an email address" "$tmp/bad.out" || fail "refused for another reason: $bad: $(head -1 "$tmp/bad.out")"
+done
+pass "a contact that is not an address is refused"
+
+echo "== a Node server, unprivileged =="
+has "listens on 3000"         "$tmp/plain.yaml" "containerPort: 3000"
+has "told its port"           "$tmp/plain.yaml" 'value: "3000"'
+has "never root"              "$tmp/plain.yaml" "runAsNonRoot: true"
+has "as the image's user"     "$tmp/plain.yaml" "runAsUser: 1000"
+has "a read-only filesystem"  "$tmp/plain.yaml" "readOnlyRootFilesystem: true"
+hasnt "no capabilities added" "$tmp/plain.yaml" "add:"
+has "ready when / renders"    "$tmp/plain.yaml" "httpGet: { path: /, port: http }"
+has "alive while it answers"  "$tmp/plain.yaml" "httpGet: { path: /healthz, port: http }"
+
 echo "== the names the site answers to =="
 helm template website "$CHART_DIR" --set ingress.enabled=true \
   --set 'ingress.hosts={rest-mail.com,www.rest-mail.com}' \

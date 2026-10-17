@@ -37,3 +37,14 @@ that did nothing.
 {{- end -}}
 {{- .Values.design -}}
 {{- end -}}
+
+{{/*
+The contact address, refused at render time if it is not one: it goes into
+mailto: links and into security.txt, a file of one field per line.
+*/}}
+{{- define "website.contact" -}}
+{{- if not (regexMatch "^[^\\s@<>()\"',;:]+@[^\\s@<>()\"',;:.]+(\\.[^\\s@<>()\"',;:.]+)+$" (toString .Values.contact)) -}}
+{{- fail (printf "contact must be an email address, not %q" (toString .Values.contact)) -}}
+{{- end -}}
+{{- .Values.contact -}}
+{{- end -}}

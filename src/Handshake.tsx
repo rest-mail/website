@@ -1,6 +1,9 @@
 import React from "react";
-import "./styles/handshake.css";
 
+// Its styles, handshake.css, come with each design's stylesheet
+// (src/styles/design-*.css).
+
+type Props = { variant?: "safe" | "bold" | "experimental"; speed?: number };
 
 /**
  * Handshake — animated SMTP -> REST upgrade.
@@ -12,7 +15,7 @@ import "./styles/handshake.css";
  *   variant: "safe" | "bold" | "experimental" — visual treatment
  *   speed:   number (ms per line, default 700)
  */
-const Handshake = ({ variant = "safe", speed = 700 }) => {
+const Handshake = ({ variant = "safe", speed = 700 }: Props) => {
   const [step, setStep] = React.useState(0);
   const [phase, setPhase] = React.useState("smtp"); // smtp | upgrade | rest
 

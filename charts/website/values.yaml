@@ -6,6 +6,10 @@ replicaCount: 2
 # can look at the others with ?design=safe and so on.
 design: safe
 
+# Where people write to the project, shown on /contact, /privacy and /security
+# and in /.well-known/security.txt. An email address and nothing else.
+contact: hello@rest-mail.com
+
 image:
   repository: ghcr.io/rest-mail/website
   # Empty: the chart's appVersion, a SemVer release of the site. Set it to
@@ -28,12 +32,14 @@ ingress:
     enabled: false
     secretName: ""
 
+# The site is a Node server that renders each page: it idles at about 75Mi
+# and stays near 120Mi under load, with its heap capped in the image.
 resources:
   requests:
     cpu: 10m
-    memory: 24Mi
+    memory: 128Mi
   limits:
-    memory: 96Mi
+    memory: 256Mi
 
 nodeSelector: {}
 tolerations: []

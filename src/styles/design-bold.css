@@ -1,0 +1,37 @@
+/* Design B, Bold (Acid Tabloid): everything it needs beyond base.css. */
+@import "./option-bold.css";
+@import "./handshake.css";
+
+/* The header and footer every page shares (BoldChrome). */
+.bold-brand { color: inherit; text-decoration: none; }
+.bold-nav-links a[data-status="active"] { background: var(--accent); padding: 0 4px; }
+.bold-foot .site-foot-links { text-transform: uppercase; }
+
+@media (max-width: 600px) {
+  /* With pages to reach, the links stay on phones, on a row of their own. */
+  .bold-nav-row { flex-wrap: wrap; }
+  .bold-nav-links { display: flex; order: 3; width: 100%; gap: 12px 20px; flex-wrap: wrap; }
+}
+
+/* Pages of text (BoldDoc): a stamped front page with an oversized title,
+   then sections under thick rules, numbered § 01, § 02… */
+.doc-bold .doc-title {
+  font-weight: 700;
+  font-size: clamp(56px, 10vw, 140px);
+  line-height: 0.88;
+  letter-spacing: -0.05em;
+  margin: 40px 0 32px;
+}
+.doc-bold .doc-num::before { content: "§ " counter(doc-section, decimal-leading-zero); }
+.doc-bold .doc-section { border-top: 2px solid var(--ink); padding-top: 64px; padding-bottom: 64px; }
+.doc-bold .doc-body a {
+  text-decoration-color: var(--ink);
+  background: linear-gradient(transparent 62%, var(--accent) 62%);
+}
+.doc-bold .doc-body a:hover { background: var(--accent); }
+.doc-bold .doc-body .doc-note { border-left-color: var(--ink); border-left-width: 6px; }
+.doc-bold .doc-body li::marker { color: var(--ink); }
+
+@media (max-width: 600px) {
+  .doc-bold .doc-title { font-size: 15vw; }
+}
