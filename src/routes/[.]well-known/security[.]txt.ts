@@ -18,6 +18,7 @@ export function securityTxt(request: Request, contact: string, now = new Date())
   const origin = `${proto}://${url.host}`;
   return [
     `Contact: mailto:${contact}`,
+    "Contact: https://github.com/rest-mail/rest-mail-server/security/advisories/new",
     `Expires: ${expires.toISOString()}`,
     "Preferred-Languages: en",
     `Policy: ${origin}/security`,

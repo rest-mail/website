@@ -134,6 +134,7 @@ describe("security.txt", () => {
     assert.match(response.headers.get("content-type"), /^text\/plain/);
     const text = await response.text();
     assert.match(text, new RegExp(`^Contact: mailto:${contact}$`, "m"));
+    assert.match(text, /^Contact: https:\/\/github\.com\/rest-mail\/rest-mail-server\/security\/advisories\/new$/m);
     assert.match(text, new RegExp(`^Policy: https://127\\.0\\.0\\.1:${port}/security$`, "m"));
     const expires = new Date(text.match(/^Expires: (.+)$/m)[1]);
     const days = (expires - Date.now()) / 86_400_000;

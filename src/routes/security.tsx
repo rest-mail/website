@@ -22,7 +22,16 @@ function Security() {
     >
       <Section title="How to report it" id="report">
         <p>
-          Email <ContactAddress />, with "Security" in the subject. Please don't open a public GitHub issue for it.
+          Report it privately on GitHub, in the repository it affects: open its <strong>Security</strong> tab and choose{" "}
+          <strong>Report a vulnerability</strong>. Only the maintainers see it. For the mail server, that is{" "}
+          <a href="https://github.com/rest-mail/rest-mail-server/security/advisories/new">
+            rest-mail-server's private report form
+          </a>
+          .
+        </p>
+        <p>
+          Or email <ContactAddress />, with "Security" in the subject. Either way, please don't open a public GitHub issue
+          for it.
         </p>
         <p>Tell us:</p>
         <ul>
