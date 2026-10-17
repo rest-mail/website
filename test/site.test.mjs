@@ -127,6 +127,16 @@ describe("setup links", () => {
   });
 });
 
+describe("publisher domain", () => {
+  test("Microsoft's identity association is the file, unchanged, as JSON", async () => {
+    const expected = await readFile(new URL(".well-known/microsoft-identity-association.json", root), "utf8");
+    const response = await get("/.well-known/microsoft-identity-association.json");
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("content-type"), "application/json");
+    assert.equal(await response.text(), expected);
+  });
+});
+
 describe("security.txt", () => {
   test("names the deployment's contact, and expires within a year", async () => {
     const response = await get("/.well-known/security.txt", { headers: { "x-forwarded-proto": "https" } });
