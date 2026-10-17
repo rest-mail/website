@@ -1,6 +1,6 @@
-import React from "react";
-import Handshake from "../Handshake.jsx";
-import "../styles/option-bold.css";
+import type { CSSProperties, ReactNode } from "react";
+import Handshake from "../Handshake";
+import { Brand, GitHubLink, PageLinks, type DocProps, type DocSectionProps, type Tweaks } from "./common";
 
 
 /**
@@ -8,41 +8,12 @@ import "../styles/option-bold.css";
  * Maximum impact. Oversized type that bleeds the column, acid lime accent,
  * thick rules, "tabloid front page" energy. Cheeky copy front and center.
  */
-const OptionBold = ({ tweaks = {} }) => {
-  const accent = tweaks.accentBold || "#caff33";
+const OptionBold = ({ tweaks = {} }: { tweaks?: Tweaks }) => {
   const speed = tweaks.speed || 700;
   const cheeky = tweaks.cheeky !== false;
 
   return (
-    <div
-      className="rm-page rm-bold"
-      style={{ "--accent": accent, "--accent-ink": "#15110d", "--paper": "#f4f1ea" }}
-    >
-      {/* Sticker nav */}
-      <header className="bold-nav">
-        <div className="bold-nav-row">
-          <div className="bold-brand">
-            <span className="bold-brand-mark">●</span>
-            REST/MAIL
-          </div>
-          <nav className="bold-nav-links">
-            <a href="#how">how</a>
-            <a href="#api">api</a>
-            <a href="#stack">stack</a>
-          </nav>
-          <a className="bold-nav-cta" href="#">github →</a>
-        </div>
-        <div className="bold-marquee">
-          <div className="bold-marquee-track">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <span key={i}>
-                R.I.P. SMTP 1982–2026 ✦ R.I.P. IMAP 1986–2026 ✦ R.I.P. POP3 1988–2026 ✦ NOW DELIVERING OVER HTTPS ✦ 
-              </span>
-            ))}
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* Hero — gigantic */}
       <section className="bold-hero">
         <div className="bold-hero-meta">
@@ -202,13 +173,88 @@ const OptionBold = ({ tweaks = {} }) => {
         </h2>
         <a className="bold-btn bold-btn-accent bold-btn-xl" href="#">$ docker run rest-mail →</a>
       </section>
+    </>
+  );
+};
+
+/**
+ * Everything around a page in this design: the sticker nav with its marquee,
+ * and the footer, the same on every page.
+ */
+export const BoldChrome = ({ tweaks = {}, children }: { tweaks?: Tweaks; children: ReactNode }) => {
+  const accent = tweaks.accentBold || "#caff33";
+
+  return (
+    <div
+      className="rm-page rm-bold"
+      style={{ "--accent": accent, "--accent-ink": "#15110d", "--paper": "#f4f1ea" } as CSSProperties}
+    >
+      {/* Sticker nav */}
+      <header className="bold-nav">
+        <div className="bold-nav-row">
+          <Brand className="bold-brand">
+            <span className="bold-brand-mark">●</span>
+            REST/MAIL
+          </Brand>
+          <nav className="bold-nav-links">
+            <PageLinks />
+          </nav>
+          <GitHubLink className="bold-nav-cta">github →</GitHubLink>
+        </div>
+        <div className="bold-marquee">
+          <div className="bold-marquee-track">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i}>
+                R.I.P. SMTP 1982–2026 ✦ R.I.P. IMAP 1986–2026 ✦ R.I.P. POP3 1988–2026 ✦ NOW DELIVERING OVER HTTPS ✦ 
+              </span>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      <main>{children}</main>
 
       <footer className="bold-foot">
         <div>© 2026 REST MAIL · MIT · github.com/rest-mail</div>
+        <nav className="site-foot-links">
+          <PageLinks home />
+        </nav>
         <div>The protocol is old. It needs to take a REST.</div>
       </footer>
     </div>
   );
 };
+
+/** A page of text in this design: a stamped front page, then numbered sections. */
+export const BoldDoc = ({ eyebrow, kicker, title, lede, children }: DocProps) => (
+  <article className="doc doc-bold">
+    <header className="bold-hero doc-hero">
+      <div className="bold-hero-meta">
+        <div className="bold-hero-stamp">
+          <div className="bold-stamp-line">REST MAIL</div>
+          <div className="bold-stamp-line">{eyebrow}</div>
+        </div>
+        {kicker && <div className="bold-hero-tag">{kicker}</div>}
+      </div>
+      <h1 className="doc-title">{title}</h1>
+      {lede && (
+        <div className="bold-hero-deck doc-lede">
+          <p>{lede}</p>
+        </div>
+      )}
+    </header>
+    {children}
+  </article>
+);
+
+export const BoldDocSection = ({ title, id, children }: DocSectionProps) => (
+  <section className="bold-how doc-section" id={id}>
+    <div className="bold-section-head">
+      <div className="bold-section-num doc-num" />
+      <h2>{title}</h2>
+    </div>
+    <div className="doc-body">{children}</div>
+  </section>
+);
 
 export default OptionBold;

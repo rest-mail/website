@@ -9,15 +9,38 @@ name: build
 # There were date-based (CalVer) tags here before. They are gone, and none
 # should be made again: a date says when, not what changed or whether it is safe
 # to take.
+#
+# A pull request is checked and its image built, but nothing is published: the
+# site has to build, pass its tests (test/, against the built server) and make
+# an image before it reaches master.
 
 on:
   push:
     branches: [master]
     tags: ["v*"]
+  pull_request:
   workflow_dispatch:
 
 jobs:
+  check:
+    name: Typecheck, build and test the site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      # Starts the built server and checks every route, with no JavaScript.
+      - run: npm test
+
   image:
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -42,17 +65,18 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build, and push unless this is a pull request
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

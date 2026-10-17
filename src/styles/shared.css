@@ -2,7 +2,7 @@
    REST Mail Redesign — shared editorial system
    ============================================================ */
 
-/* The typefaces are bundled with the site (src/main.jsx), not fetched from a
+/* The typefaces are bundled with the site (base.css), not fetched from a
    third party: nothing outside rest-mail.com loads on it. */
 
 :root {

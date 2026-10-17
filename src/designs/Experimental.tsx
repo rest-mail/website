@@ -1,6 +1,6 @@
-import React from "react";
-import Handshake from "../Handshake.jsx";
-import "../styles/option-experimental.css";
+import React, { type CSSProperties, type ReactNode } from "react";
+import Handshake from "../Handshake";
+import { Brand, GitHubLink, PageLinks, type DocProps, type DocSectionProps, type Tweaks } from "./common";
 
 
 /**
@@ -8,8 +8,7 @@ import "../styles/option-experimental.css";
  * Zine / dataviz / sticker energy. Magenta + ink. Asymmetric grid, rotated
  * stickers, ASCII diagrams, copy that doesn't take itself seriously.
  */
-const OptionExperimental = ({ tweaks = {} }) => {
-  const accent = tweaks.accentExp || "#ff2d6f";
+const OptionExperimental = ({ tweaks = {} }: { tweaks?: Tweaks }) => {
   const speed = tweaks.speed || 700;
 
   const [tomb, setTomb] = React.useState(0);
@@ -19,19 +18,7 @@ const OptionExperimental = ({ tweaks = {} }) => {
   }, []);
 
   return (
-    <div
-      className="rm-page rm-exp"
-      style={{ "--accent": accent, "--accent-ink": "#fff", "--paper": "#f0ece2" }}
-    >
-      {/* Top status bar */}
-      <header className="exp-top">
-        <div className="exp-top-row">
-          <span className="exp-pill">SYS://rest-mail.exe</span>
-          <span className="exp-top-mid">— a zine about turning email off and on again —</span>
-          <span className="exp-pill exp-pill-blink">● LIVE</span>
-        </div>
-      </header>
-
+    <>
       {/* Hero collage */}
       <section className="exp-hero">
         <div className="exp-hero-canvas">
@@ -271,14 +258,72 @@ const OptionExperimental = ({ tweaks = {} }) => {
           </div>
         </div>
       </section>
+    </>
+  );
+};
+
+/**
+ * Everything around a page in this design: the status bar, a row of page
+ * stickers, and the footer, the same on every page.
+ */
+export const ExperimentalChrome = ({ tweaks = {}, children }: { tweaks?: Tweaks; children: ReactNode }) => {
+  const accent = tweaks.accentExp || "#ff2d6f";
+
+  return (
+    <div
+      className="rm-page rm-exp"
+      style={{ "--accent": accent, "--accent-ink": "#fff", "--paper": "#f0ece2" } as CSSProperties}
+    >
+      {/* Top status bar */}
+      <header className="exp-top">
+        <div className="exp-top-row">
+          <Brand className="exp-pill">SYS://rest-mail.exe</Brand>
+          <span className="exp-top-mid">— a zine about turning email off and on again —</span>
+          <span className="exp-pill exp-pill-blink">● LIVE</span>
+        </div>
+      </header>
+      <nav className="exp-nav">
+        <PageLinks />
+        <GitHubLink className="exp-nav-gh">github →</GitHubLink>
+      </nav>
+
+      <main>{children}</main>
 
       <footer className="exp-foot">
         <div className="exp-foot-mark">REST/MAIL</div>
         <div>made in protest of `tail -f /var/log/maillog`</div>
+        <nav className="site-foot-links">
+          <PageLinks home />
+        </nav>
         <div className="exp-foot-meta">2026 · MIT · github.com/rest-mail</div>
       </footer>
     </div>
   );
 };
+
+/** A page of text in this design: stamps and a big title, then sections filed as figures. */
+export const ExperimentalDoc = ({ eyebrow, kicker, title, lede, children }: DocProps) => (
+  <article className="doc doc-exp">
+    <header className="exp-declass doc-hero">
+      <div className="exp-declass-head">
+        <div className="exp-declass-tag">
+          <span className="exp-stamp-mini">{eyebrow}</span>
+          {kicker && <span className="exp-stamp-mini doc-stamp-hot">{kicker}</span>}
+        </div>
+        <h1 className="doc-title">{title}</h1>
+        {lede && <p className="exp-declass-sub doc-lede">{lede}</p>}
+      </div>
+    </header>
+    {children}
+  </article>
+);
+
+export const ExperimentalDocSection = ({ title, id, children }: DocSectionProps) => (
+  <section className="exp-declass doc-section" id={id}>
+    <div className="doc-num" />
+    <h2>{title}</h2>
+    <div className="doc-body">{children}</div>
+  </section>
+);
 
 export default OptionExperimental;
