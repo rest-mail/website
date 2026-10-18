@@ -273,7 +273,7 @@ export const SafeChrome = ({ tweaks = {}, children }: { tweaks?: Tweaks; childre
       <header className="safe-nav">
         <div className="safe-nav-row">
           <Brand className="safe-nav-brand">
-            <span className="safe-mark">▮</span>
+            <img className="safe-mark" src="/favicon.svg" alt="" width={28} height={28} />
             <span>REST Mail</span>
           </Brand>
           <nav className="safe-nav-links">
