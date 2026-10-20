@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# TanStack Start's build cache.
+.tanstack/

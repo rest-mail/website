@@ -1,0 +1,78 @@
+/* ============================================================
+   The pages around the home page: the links every header and
+   footer carries, and pages of text (About, Privacy, Contact,
+   Security, Not found). Here is what all three designs share;
+   each design-<name>.css draws the rest its own way.
+   ============================================================ */
+
+/* Footer links: every page, from every page. */
+.site-foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.site-foot-links a { color: inherit; text-decoration: none; }
+.site-foot-links a:hover,
+.site-foot-links a[data-status="active"] { text-decoration: underline; text-underline-offset: 3px; }
+
+/* A page of text. Sections number themselves, each design in its own style. */
+.doc { counter-reset: doc-section; }
+.doc-num::before { counter-increment: doc-section; }
+
+.doc-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 96px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.doc-body { max-width: 68ch; }
+.doc-body > * + * { margin-top: 1em; }
+.doc-body p,
+.doc-body li {
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.doc-body ul,
+.doc-body ol { padding-left: 1.3em; }
+.doc-body li + li { margin-top: 0.5em; }
+.doc-body li::marker { color: var(--ink-3); }
+.doc-body h3 {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-top: 2em;
+}
+.doc-body strong { color: var(--ink); font-weight: 600; }
+.doc-body a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.doc-body code {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  background: var(--paper-2);
+  padding: 1px 6px;
+  overflow-wrap: anywhere;
+}
+/* A passage set apart: the Limited Use disclosure, a summary. */
+.doc-body .doc-note {
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 18px;
+}
+.doc-body .doc-small { font-size: 15px; color: var(--ink-3); }
+
+@media (max-width: 600px) {
+  .doc-body p, .doc-body li { font-size: 17px; }
+}
