@@ -6,7 +6,7 @@
         "components": [
           {
             "/": "/setup",
-            "comment": "Claiming a freshly installed server opens the app."
+            "comment": "Signing in to a freshly installed server opens the app."
           },
           {
             "/": "/setup/",

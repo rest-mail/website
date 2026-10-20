@@ -9,9 +9,9 @@ RUN npm ci
 COPY vite.config.ts tsconfig.json ./
 COPY public/ public/
 COPY src/ src/
-# Claiming a freshly installed server: the page a setup link lands on when the
-# app is not there to take it, and the file Apple reads to decide that the app
-# should take it. Both are built into the server, exactly as written.
+# Signing in to a freshly installed server: the page the installer's sign-in
+# link lands on when the app is not there to take it, and the file Apple reads
+# to decide that the app should take it. Both are built in, exactly as written.
 COPY setup/ setup/
 COPY .well-known/ .well-known/
 RUN npm run build

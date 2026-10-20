@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claim your server — REST Mail</title>
-  <meta name="description" content="Open a REST Mail setup link on the phone where the app is installed, and it claims your freshly installed mail server.">
+  <title>Sign in to your new server — rest-mail</title>
+  <meta name="description" content="Open the sign-in link your rest-mail installer showed on the phone where the app is installed, and it signs you in to your new mail server.">
   <meta name="robots" content="noindex">
   <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <!-- Deliberately self-contained: no fonts, no analytics, nothing from
-       anywhere else. A setup link carries a code that claims a mail server,
-       and no third party gets to be in the room when one is opened. -->
+       anywhere else. A sign-in link carries a mail server's first admin
+       password, and no third party gets to be in the room when one is
+       opened. -->
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -32,63 +33,97 @@
     ol { padding-left: 1.2rem; }
     li { margin-bottom: 0.4rem; }
     a { color: #8a5a2b; }
+    .open {
+      display: inline-block; margin: 0 0 1.25rem; padding: 0.75rem 1.25rem;
+      border-radius: 8px; background: #8a5a2b; color: #fff;
+      font-weight: 600; text-decoration: none;
+    }
+    dl { margin: 0 0 1rem; }
+    dt { margin: 0 0 0.3rem; }
+    dd { margin: 0 0 1rem; }
     @media (prefers-color-scheme: dark) {
       body { color: #ece9e3; background: #16150f; }
       .code { background: #211f18; border-color: #3a362c; }
       .muted { color: #a8a299; }
       a { color: #d2a36a; }
+      .open { background: #d2a36a; color: #16150f; }
     }
   </style>
 </head>
 <body>
   <main>
-    <h1>Claim your mail server</h1>
+    <h1>Sign in to your new mail server</h1>
 
-    <div id="with-code" hidden>
-      <p>This link carries the setup code for a freshly installed REST Mail
-        server. With the app installed, opening it on your phone starts the
-        setup. If you are reading this page instead, the app did not open:
-        enter the code by hand.</p>
-      <p class="muted">Setup code</p>
-      <p class="code" id="code"></p>
-      <p class="muted" id="server" hidden></p>
-      <ol>
-        <li>Open REST Mail on your phone.</li>
-        <li>Choose <strong>Set up a new server</strong>.</li>
-        <li>Enter your server's address, then this code.</li>
-      </ol>
-      <p class="muted">The code works once, and only until your server is
-        claimed or restarted. Treat it like a password: whoever uses it first
-        becomes the server's admin.</p>
+    <div id="with-sign-in" hidden>
+      <p>This link carries the sign-in for a freshly installed rest-mail
+        server, from the QR code its installer showed. With the app installed,
+        it opens the app with the sign-in filled in. If you are reading this
+        page instead, the app did not open.</p>
+      <p><a class="open" id="open" href="#">Open in the rest-mail app</a></p>
+      <p>Or sign in by hand: open rest-mail, choose <strong>Set up a new
+        server</strong>, and enter these.</p>
+      <dl>
+        <dt class="muted">Server</dt>
+        <dd class="code" id="server">(the one you installed)</dd>
+        <dt class="muted">Username</dt>
+        <dd class="code" id="username"></dd>
+        <dt class="muted">Password</dt>
+        <dd class="code" id="password"></dd>
+      </dl>
+      <p class="muted">Treat the password like any other: it lets whoever has
+        it sign in as your server's admin. Signing in with it makes you choose
+        your own and set up an authenticator, after which it stops working. It
+        also stops working 72 hours after your server first took it.</p>
     </div>
 
-    <div id="without-code">
-      <p>Setup links are made by a freshly installed REST Mail server, which
-        prints one — with a QR code — every time it starts, until somebody
-        claims it. Open the link on the phone where the app is installed.</p>
-      <p class="muted">There is no setup code in this link, so there is nothing
-        to do here.</p>
+    <div id="old-code" hidden>
+      <p>This link carries a setup code, from a rest-mail server older than
+        version 0.7. Nothing redeems setup codes any more: a server's first
+        admin comes from the password its installer showed you. Sign in with
+        that, in the app.</p>
     </div>
 
-    <p><a href="/">About REST Mail</a></p>
+    <div id="without-sign-in">
+      <p>Sign-in links are made by the rest-mail installer, which shows one —
+        with a QR code — once, for the admin of the server it installed. Open
+        the link on the phone where the app is installed.</p>
+      <p class="muted">There is no sign-in in this link, so there is nothing to
+        do here.</p>
+    </div>
+
+    <p><a href="/">About rest-mail</a></p>
   </main>
 
   <script>
-    // The code travels after the `#`, which browsers never send to a web
+    // The sign-in travels after the `#`, which browsers never send to a web
     // server: rest-mail.com cannot see it, and neither can its logs.
     (function () {
       var parameters = new URLSearchParams(location.hash.replace(/^#/, ''));
-      var code = (parameters.get('token') || '').trim();
-      if (!code) return;
-      document.getElementById('code').textContent = code;
-      var server = parameters.get('server');
-      if (server) {
-        var line = document.getElementById('server');
-        line.textContent = 'for ' + server;
-        line.hidden = false;
+      var password = parameters.get('password') || '';
+      if (!password) {
+        if (parameters.get('token')) {
+          document.getElementById('old-code').hidden = false;
+          document.getElementById('without-sign-in').hidden = true;
+        }
+        return;
       }
-      document.getElementById('with-code').hidden = false;
-      document.getElementById('without-code').hidden = true;
+      // Read, then out of the address bar and this tab's history: a password
+      // is not something to leave lying in a browser.
+      history.replaceState(null, '', location.pathname);
+      var server = parameters.get('server') || '';
+      var username = (parameters.get('username') || '').trim() || 'admin';
+      if (server) document.getElementById('server').textContent = server;
+      document.getElementById('username').textContent = username;
+      document.getElementById('password').textContent = password;
+      // The app's own scheme opens it where this web link did not: on Android,
+      // and wherever the link was opened in a browser.
+      var app = new URLSearchParams();
+      if (server) app.set('server', server);
+      app.set('username', username);
+      app.set('password', password);
+      document.getElementById('open').href = 'rest-mail://setup?' + app.toString();
+      document.getElementById('with-sign-in').hidden = false;
+      document.getElementById('without-sign-in').hidden = true;
     })();
   </script>
 </body>

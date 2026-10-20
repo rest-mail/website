@@ -30,7 +30,7 @@ it, so a preview lasts from page to page.
 | `/privacy` | The privacy policy, with Google's Limited Use disclosure for Gmail |
 | `/contact` | How to reach the project |
 | `/security` | How to report a vulnerability; `/.well-known/security.txt` says the same for machines (RFC 9116) |
-| `/setup` | Where a server's setup link lands (see below) |
+| `/setup` | Where the installer's sign-in link lands (see below) |
 | anything else | A 404 page |
 
 Every page is drawn in all three designs and rendered on the server, so it
@@ -58,8 +58,8 @@ footer, drawn by each design its own way, link them all.
 │   ├── Handshake.tsx             # the SMTP → REST animation all three share
 │   └── styles/                   # base.css for every page, design-<name>.css for each design
 ├── public/                       # copied as is: the favicon
-├── setup/index.html              # where a server's setup link lands
-├── .well-known/                  # apple-app-site-association: setup links open the app;
+├── setup/index.html              # where the installer's sign-in link lands
+├── .well-known/                  # apple-app-site-association: sign-in links open the app;
 │                                 # microsoft-identity-association.json: the publisher domain
 ├── server.mjs                    # the production server: serves the build, logs no requests
 ├── test/                         # what the built server must do, checked with no JavaScript
@@ -86,27 +86,32 @@ response says so in its `Content-Security-Policy`.
 - **Analytics:** none, and no cookies. The old page carried a Google Analytics tag for a Universal Analytics property, which stopped collecting in July 2023; it went with that page.
 - **Logs:** the server logs no requests (`server.mjs`): it writes a line when it starts and when something fails. `/privacy` says so, so keep it true.
 
-## Claiming a mail server
+## Signing in to a new mail server
 
-A freshly installed rest-mail server prints a setup code, with a QR code, every
-time it starts until somebody claims it. Those links are ordinary web links so
-that they are tappable anywhere — `https://rest-mail.com/setup#token=CODE` —
-and this site serves both halves of what that needs:
+The rest-mail installer shows the first admin's password once, as text and as a
+QR code of a sign-in link. The link is an ordinary web link so that a phone's
+camera offers to open it and it is tappable anywhere —
+`https://rest-mail.com/setup#server=URL&username=NAME&password=PASSWORD` — and
+this site serves both halves of what that needs:
 
 - `.well-known/apple-app-site-association` tells iOS that the link belongs to
   the rest-mail app, so tapping it opens the app rather than this site. It is
   served as `application/json`
   (`src/routes/[.]well-known/apple-app-site-association.ts`), which Apple
   requires and which a file with no extension does not get by default.
-- `setup/index.html` is where the link lands when the app is not installed. It
-  shows the code so it can be typed in by hand. It is sent exactly as written,
-  at `/setup`, `/setup/` and `/setup/index.html` (`src/routes/setup.ts`): it is
-  not a page of the app, and carries no script but its own.
+- `setup/index.html` is where the link lands when the app did not take it: on
+  Android, which has no verified link to the app, or in a browser. It offers
+  **Open in the rest-mail app** (`rest-mail://setup?…`, which Android opens),
+  shows the sign-in so it can be typed by hand, and takes it out of the address
+  bar and the tab's history. It is sent exactly as written at `/setup`,
+  `/setup/` and `/setup/index.html` (`src/routes/setup.ts`): it is not a page of
+  the app, and carries no script but its own.
 
-A setup code claims a mail server, so a link carries it after the `#`, which
-browsers never send to a web server: this site cannot see one, and neither can
-its logs. For the same reason the setup page loads nothing from anywhere else,
-and nothing else on the site does either.
+The link carries a mail server's admin password, so it rides after the `#`,
+which browsers never send to a web server: this site cannot see one, and neither
+can its logs. For the same reason the setup page loads nothing from anywhere
+else, and nothing else on the site does either. Servers before rest-mail 0.7
+printed setup codes instead; the page says that nothing redeems one any more.
 
 ## Publisher domain
 
