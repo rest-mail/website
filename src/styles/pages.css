@@ -79,7 +79,8 @@
 
 /* Email, explained (src/guide/). PROTOTYPE: the diagram embeds are compared
    on the real site before one is chosen. */
-.guide-intro { margin: 0 auto 48px; padding: 0 24px; }
+.guide-intro { padding: 0 24px 48px; }
+.guide-intro > .doc-body, .guide-source > .doc-body { margin: 0 auto; }
 .guide-html > * + * { margin-top: 1em; }
 .guide-source { margin: 48px auto; padding: 0 24px; font-size: 14px; }
 .guide-diagram { margin: 2em 0; width: min(1240px, 100vw - 48px); position: relative; left: 50%; transform: translateX(-50%); }

@@ -14,18 +14,65 @@
 }
 
 /* Pages of text (SafeDoc): the masthead line, a big serif title, then the
-   home page's two-column sections, numbered § I, § II… */
-.doc-safe .doc-hero { padding-bottom: 56px; }
+   home page's sections, numbered § I, § II… All on the page grid
+   (option-safe.css): the title across it, the summary and every section's
+   text from its second column. */
+.doc-safe .doc-hero {
+  display: grid;
+  grid-template-columns: var(--safe-cols);
+  column-gap: var(--safe-gap);
+  padding-bottom: 56px;
+}
 .doc-safe .doc-title {
+  grid-column: 1 / -1;
+  font-size: clamp(48px, 6.67vw, 176px);
   font-variation-settings: "opsz" 144, "SOFT" 50;
   letter-spacing: -0.04em;
   max-width: 16ch;
 }
-.doc-safe .doc-lede { margin: 28px 0 0; max-width: 640px; }
+.doc-safe .doc-lede { grid-column: 2 / -1; margin: 28px 0 0; max-width: none; }
+.doc-safe .doc-lede p { font-size: calc(var(--safe-text) + 2px); max-width: 60ch; }
 .doc-safe .doc-num::before { content: "§ " counter(doc-section, upper-roman); }
-.doc-safe .safe-section-label h2 { font-size: 36px; }
+.doc-safe .safe-section-label h2 { font-size: calc(var(--safe-text) * 2); }
 .doc-safe .doc-body a:hover { color: var(--accent); }
 
+/* Text grows with the window, and so does its line length; a figure may use
+   the whole grid. */
+.doc-safe .doc-body { font-size: var(--safe-text); max-width: none; }
+.doc-safe .doc-body p,
+.doc-safe .doc-body li { font-size: var(--safe-text); }
+.doc-safe .doc-body > :not(figure) { max-width: 68ch; }
+.doc-safe .doc-body pre { max-width: none; }
+
+/* Email, explained (src/guide/): the introduction and the source line sit
+   where every section's text does, and a diagram spans the grid. */
+.doc-safe .guide-intro,
+.doc-safe .guide-source {
+  display: grid;
+  grid-template-columns: var(--safe-cols);
+  column-gap: var(--safe-gap);
+  padding: 0 var(--safe-pad) 48px;
+  margin: 0;
+}
+.doc-safe .guide-intro > .doc-body,
+.doc-safe .guide-source > .doc-body { grid-column: 2 / -1; margin: 0; }
+.doc-safe .guide-source > .doc-body { font-size: 14px; }
+.doc-safe .guide-diagram {
+  width: calc(150% + var(--safe-gap) / 2);
+  margin-left: calc(-50% - var(--safe-gap) / 2);
+  left: auto;
+  transform: none;
+}
+
+@media (max-width: 960px) {
+  .doc-safe .doc-hero,
+  .doc-safe .guide-intro,
+  .doc-safe .guide-source { grid-template-columns: 1fr; }
+  .doc-safe .doc-lede,
+  .doc-safe .guide-intro > .doc-body,
+  .doc-safe .guide-source > .doc-body { grid-column: auto; }
+  .doc-safe .guide-diagram { width: 100%; margin-left: 0; }
+}
 @media (max-width: 600px) {
   .doc-safe .safe-section-label h2 { font-size: 30px; }
 }

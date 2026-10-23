@@ -27,22 +27,26 @@ export function GuideChapter({ chapter, embed }: { chapter: Chapter; embed: Embe
       title={chapter.title}
       lede={chapter.summary ?? undefined}
     >
-      <div className="doc-body guide-intro">
-        <Html html={chapter.intro} embed={embed} />
-      </div>
+      <section className="guide-intro">
+        <div className="doc-body">
+          <Html html={chapter.intro} embed={embed} />
+        </div>
+      </section>
       {chapter.sections.map((section) => (
         <Section key={section.id} id={section.id} title={<span dangerouslySetInnerHTML={{ __html: section.titleHtml }} />}>
           <Html html={section.html} embed={embed} />
         </Section>
       ))}
-      <p className="guide-source doc-body">
+      <footer className="guide-source">
+        <p className="doc-body">
         Built from{" "}
         <a href={`https://github.com/${bundle.source.repository}/blob/${commit}/${chapter.file}`}>{chapter.file}</a> at{" "}
         <a href={`https://github.com/${bundle.source.repository}/commit/${commit}`}>
           <code>{commit.slice(0, 12)}</code>
         </a>
         .
-      </p>
+        </p>
+      </footer>
     </Doc>
   );
 }
