@@ -4,6 +4,15 @@
 
 .rm-safe {
   font-family: var(--serif);
+  /* One grid for every block on a page: three equal columns, one gap, one
+     margin. A label takes the first column and text the other two, so every
+     block's second column starts on the same line, from the masthead down.
+     The margins, the gap and the text grow with the window, so a wide window
+     gets the same page, larger, not a narrow strip of it. */
+  --safe-pad: clamp(24px, 3.34vw, 128px);
+  --safe-gap: clamp(24px, 4.45vw, 160px);
+  --safe-cols: repeat(3, minmax(0, 1fr));
+  --safe-text: clamp(18px, 0.625vw + 9px, 26px);
 }
 
 /* Nav */
@@ -14,7 +23,7 @@
   display: flex;
   align-items: center;
   gap: 32px;
-  padding: 18px 48px;
+  padding: 18px var(--safe-pad);
 }
 .safe-nav-brand {
   display: flex; align-items: center; gap: 10px;
@@ -50,14 +59,16 @@
 }
 
 /* Masthead */
-.safe-masthead { padding: 14px 48px 10px; }
+.safe-masthead { padding: 14px var(--safe-pad) 10px; }
 .safe-mast-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--safe-cols);
+  column-gap: var(--safe-gap);
   align-items: baseline;
-  justify-content: space-between;
-  gap: 32px;
 }
-.safe-mast-meta { display: flex; gap: 28px; }
+.safe-mast-grid > :last-child:not(:first-child) { grid-column: 2 / -1; }
+.safe-mast-meta { display: flex; flex-wrap: wrap; gap: 4px 28px; }
+.safe-mast-meta > * { white-space: nowrap; }
 .safe-mast-section { color: var(--ink-3); }
 .safe-mast-eyebrow {
   font-family: var(--serif-display);
@@ -68,14 +79,19 @@
 
 /* Hero */
 .safe-hero {
-  padding: 56px 48px 80px;
+  padding: 56px var(--safe-pad) 80px;
 }
 .safe-hero-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 64px;
+  grid-template-columns: var(--safe-cols);
+  grid-template-rows: auto auto 1fr;
+  column-gap: var(--safe-gap);
   align-items: start;
 }
+.safe-hero-headline { display: contents; }
+.safe-hero-headline h1 { grid-column: 1 / -1; }
+.safe-hero-deck, .safe-hero-actions { grid-column: 1; }
+.safe-hero-media { grid-column: 2 / -1; grid-row: 2 / span 2; }
 
 .safe-hero-headline h1 {
   font-family: var(--serif);
@@ -134,11 +150,11 @@
 }
 
 /* Obituary cards */
-.safe-obit { padding: 40px 48px; background: var(--paper-2); }
+.safe-obit { padding: 40px var(--safe-pad); background: var(--paper-2); }
 .safe-obit-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
+  grid-template-columns: var(--safe-cols);
+  column-gap: var(--safe-gap);
 }
 .safe-obit-cell {
   padding: 24px 28px;
@@ -178,13 +194,14 @@
 }
 
 /* Sections */
-.safe-section { padding: 80px 48px; }
+.safe-section { padding: 80px var(--safe-pad); }
 .safe-section-grid {
   display: grid;
-  grid-template-columns: 0.9fr 2fr;
-  gap: 64px;
+  grid-template-columns: var(--safe-cols);
+  column-gap: var(--safe-gap);
   align-items: start;
 }
+.safe-section-body { grid-column: 2 / -1; min-width: 0; }
 .safe-section-label {
   position: sticky;
   top: 32px;
@@ -385,7 +402,7 @@
 .safe-cta {
   background: var(--accent);
   color: var(--accent-ink);
-  padding: 96px 48px;
+  padding: 96px var(--safe-pad);
 }
 .safe-cta-grid {
   display: grid;
@@ -418,7 +435,7 @@
 
 /* Footer */
 .safe-foot {
-  padding: 40px 48px;
+  padding: 40px var(--safe-pad);
   background: var(--paper);
 }
 .safe-foot-grid {
@@ -441,19 +458,24 @@
 .safe-foot-meta { color: var(--ink-3); }
 
 /* Density */
-.rm-safe.density-tight .safe-section { padding: 56px 48px; }
-.rm-safe.density-tight .safe-hero { padding: 36px 48px 48px; }
-.rm-safe.density-airy .safe-section { padding: 120px 48px; }
-.rm-safe.density-airy .safe-hero { padding: 80px 48px 120px; }
+.rm-safe.density-tight .safe-section { padding: 56px var(--safe-pad); }
+.rm-safe.density-tight .safe-hero { padding: 36px var(--safe-pad) 48px; }
+.rm-safe.density-airy .safe-section { padding: 120px var(--safe-pad); }
+.rm-safe.density-airy .safe-hero { padding: 80px var(--safe-pad) 120px; }
 
 /* ------------------------------------------------------------
    Narrow screens. The design was drawn at 1200px; everything
    below is for tablets and phones.
    ------------------------------------------------------------ */
 @media (max-width: 960px) {
-  .safe-nav-row, .safe-masthead, .safe-hero, .safe-obit,
-  .safe-section, .safe-cta, .safe-foot { padding-left: 24px; padding-right: 24px; }
+  .rm-safe { --safe-pad: 24px; }
+  /* One column: every block in its order, nothing placed in a column that is
+     not there. */
   .safe-hero-grid, .safe-section-grid { grid-template-columns: 1fr; gap: 40px; }
+  .safe-hero-grid { row-gap: 0; }
+  .safe-hero-headline h1, .safe-hero-deck, .safe-hero-actions, .safe-section-body { grid-column: auto; }
+  .safe-hero-media { grid-column: auto; grid-row: auto; margin-top: 40px; }
+  .safe-mast-grid { display: flex; justify-content: space-between; gap: 32px; }
   .safe-pull-row { grid-template-columns: repeat(2, 1fr); row-gap: 24px; }
 }
 @media (max-width: 600px) {
