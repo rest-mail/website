@@ -17,6 +17,7 @@ const client = fileURLToPath(new URL("./dist/client", import.meta.url));
 
 const types = {
   ".css": "text/css; charset=utf-8",
+  ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json",
   ".svg": "image/svg+xml",
@@ -61,6 +62,15 @@ const always = {
   "x-content-type-options": "nosniff",
 };
 
+// PROTOTYPE. Email, explained's diagrams are Archify's standalone pages:
+// inline script and styles, typefaces beside them, and framed by the chapter
+// that shows them. Nothing else, and nothing from anywhere.
+const diagram = {
+  "content-security-policy":
+    "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'self'; media-src blob:; frame-ancestors 'self'; base-uri 'none'; form-action 'none'",
+};
+const isDiagram = (pathname) => /^\/email-explained\/diagrams\/[a-z0-9-]+\.html$/.test(pathname);
+
 const failed = () =>
   new Response("Something went wrong.\n", { status: 500, headers: { "content-type": "text/plain; charset=utf-8" } });
 
@@ -88,6 +98,7 @@ const server = serve({
   async fetch(request) {
     const response = await respond(request);
     const headers = new Headers(response.headers);
+    if (isDiagram(new URL(request.url).pathname)) for (const [name, value] of Object.entries(diagram)) headers.set(name, value);
     for (const [name, value] of Object.entries(always)) if (!headers.has(name)) headers.set(name, value);
     return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
   },

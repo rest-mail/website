@@ -14,6 +14,8 @@ COPY src/ src/
 # to decide that the app should take it. Both are built in, exactly as written.
 COPY setup/ setup/
 COPY .well-known/ .well-known/
+# Email, explained: the content bundle rest-mail-server builds from the guide.
+COPY content/ content/
 RUN npm run build
 # The server bundle carries React and the router (vite.config.ts); what is
 # left to install is srvx, which serves it.
