@@ -33,7 +33,18 @@
   text-rendering: optimizeLegibility;
   position: relative;
   overflow: hidden;
+  /* However tall the window, the page fills it: a short page's footer sits at
+     the bottom, not partway up with the browser's white below it. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
+
+.rm-page > main { flex: 1 0 auto; }
+
+/* What shows past the page when the browser scrolls beyond it. */
+html { background: var(--paper); }
 
 /* Mono micro-labels used throughout */
 .rm-eyebrow {
