@@ -63,11 +63,11 @@ const always = {
 };
 
 // PROTOTYPE. Email, explained's diagrams are Archify's standalone pages:
-// inline script and styles, their typefaces as data: URLs, and framed by the
-// chapter that shows them. Nothing else, and nothing from anywhere.
+// inline script and styles, typefaces beside them, and framed by the chapter
+// that shows them. Nothing else, and nothing from anywhere.
 const diagram = {
   "content-security-policy":
-    "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src blob:; frame-ancestors 'self'; base-uri 'none'; form-action 'none'",
+    "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'self'; media-src blob:; frame-ancestors 'self'; base-uri 'none'; form-action 'none'",
 };
 const isDiagram = (pathname) => /^\/email-explained\/diagrams\/[a-z0-9-]+\.html$/.test(pathname);
 

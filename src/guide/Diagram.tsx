@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { diagramFile } from "./bundle";
+import { absolute, mountNamespaced } from "./namespaced";
 
-// PROTOTYPE. Six ways to put an Archify diagram in a page, so they can be
+// PROTOTYPE. Eight ways to put an Archify diagram in a page, so they can be
 // compared on the real site, with its stylesheets and its
 // Content-Security-Policy (server.mjs). ?embed= picks one on any chapter.
 //
@@ -13,7 +14,9 @@ import { diagramFile } from "./bundle";
 // - srcdoc: the same page in an opaque, sandboxed frame (Archify's own advice).
 // - shadow: its markup and styles in a shadow root, its script in the page.
 // - inline: its markup in the page, its styles scoped to the diagram.
-export const embeds = ["image", "iframe", "iframe-embed", "srcdoc", "shadow", "inline"] as const;
+// - inline-ns: the same, with everything it names prefixed (namespaced.ts).
+// - inline-ns-x2: two of those on one page, to see whether they collide.
+export const embeds = ["image", "iframe", "iframe-embed", "srcdoc", "shadow", "inline", "inline-ns", "inline-ns-x2"] as const;
 export type Embed = (typeof embeds)[number];
 export const isEmbed = (value: unknown): value is Embed => embeds.includes(value as Embed);
 
@@ -33,7 +36,13 @@ export function Diagram({ name, alt, embed }: { name: string; alt: string; embed
         {embed === "iframe" && <Framed name={name} alt={alt} />}
         {embed === "iframe-embed" && <Framed name={name} alt={alt} bare />}
         {embed === "srcdoc" && <Srcdoc name={name} alt={alt} />}
-        {(embed === "shadow" || embed === "inline") && <Mounted name={name} alt={alt} how={embed} />}
+        {(embed === "shadow" || embed === "inline" || embed === "inline-ns") && <Mounted name={name} alt={alt} how={embed} />}
+        {embed === "inline-ns-x2" && (
+          <>
+            <Mounted name={name} alt={alt} how="inline-ns" />
+            <Mounted name={name} alt={alt} how="inline-ns" instance={`${name}-2`} />
+          </>
+        )}
       </div>
     </figure>
   );
@@ -87,14 +96,19 @@ function Srcdoc({ name, alt }: { name: string; alt: string }) {
 
 // Shadow and inline: the static image until the script has the page, then
 // Archify's own markup, styles and script.
-function Mounted({ name, alt, how }: { name: string; alt: string; how: "shadow" | "inline" }) {
+function Mounted({ name, alt, how, instance = name }: { name: string; alt: string; how: "shadow" | "inline" | "inline-ns"; instance?: string }) {
   const host = useRef<HTMLDivElement>(null);
   const html = useHtml(name);
   useEffect(() => {
     if (!html || !host.current || host.current.dataset.mounted) return;
     host.current.dataset.mounted = "true";
+    if (how === "inline-ns") {
+      host.current.querySelector("img")?.remove();
+      mountNamespaced(host.current, html, diagramFile(name, "html"), instance);
+      return;
+    }
     const page = new DOMParser().parseFromString(html, "text/html");
-    const styles = [...page.querySelectorAll("style")].map((s) => s.textContent ?? "");
+    const styles = [...page.querySelectorAll("style")].map((s) => absolute(s.textContent ?? "", diagramFile(name, "html")));
     const scripts = [...page.querySelectorAll("script")];
     scripts.forEach((s) => s.remove());
 
