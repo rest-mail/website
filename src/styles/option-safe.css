@@ -159,7 +159,6 @@
 .safe-obit-cell {
   padding: 24px 28px;
   border-right: 1px solid var(--line);
-  text-align: center;
   position: relative;
 }
 .safe-obit-cell:last-child { border-right: none; }
@@ -407,7 +406,6 @@
 .safe-cta-grid {
   display: grid;
   gap: 32px;
-  text-align: center;
 }
 .safe-cta h2 {
   font-family: var(--serif);
@@ -420,7 +418,6 @@
 .safe-cta-actions {
   display: flex;
   gap: 12px;
-  justify-content: center;
   flex-wrap: wrap;
 }
 .safe-cta .rm-btn-accent {
@@ -437,14 +434,15 @@
 .safe-foot {
   padding: 40px var(--safe-pad);
   background: var(--paper);
-}
-.safe-foot-grid {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: var(--safe-cols);
+  column-gap: var(--safe-gap);
+  row-gap: 8px;
   align-items: baseline;
-  gap: 32px;
-  flex-wrap: wrap;
 }
+.safe-foot-grid { display: contents; }
+.safe-foot-brand { grid-column: 1; grid-row: 1 / span 2; }
+.safe-foot-tag, .safe-foot-meta, .safe-foot .site-foot-links { grid-column: 2 / -1; }
 .safe-foot-brand {
   font-family: var(--serif);
   font-weight: 600;
@@ -475,7 +473,9 @@
   .safe-hero-grid { row-gap: 0; }
   .safe-hero-headline h1, .safe-hero-deck, .safe-hero-actions, .safe-section-body { grid-column: auto; }
   .safe-hero-media { grid-column: auto; grid-row: auto; margin-top: 40px; }
-  .safe-mast-grid { display: flex; justify-content: space-between; gap: 32px; }
+  .safe-mast-grid { display: flex; flex-wrap: wrap; gap: 8px 32px; }
+  .safe-foot { grid-template-columns: 1fr; }
+  .safe-foot-brand, .safe-foot-tag, .safe-foot-meta, .safe-foot .site-foot-links { grid-column: auto; grid-row: auto; }
   .safe-pull-row { grid-template-columns: repeat(2, 1fr); row-gap: 24px; }
 }
 @media (max-width: 600px) {
@@ -497,5 +497,4 @@
   .rm-safe pre { white-space: pre-wrap; overflow-wrap: anywhere; }
   .safe-cta { padding-top: 64px; padding-bottom: 64px; }
   .safe-cta-actions { display: flex; flex-direction: column; gap: 12px; }
-  .safe-foot-grid { flex-direction: column; gap: 8px; }
 }
