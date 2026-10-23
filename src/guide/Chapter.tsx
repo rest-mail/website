@@ -23,7 +23,7 @@ export function GuideChapter({ chapter, embed }: { chapter: Chapter; embed: Embe
   return (
     <Doc
       eyebrow={chapter.part ? `Email, explained · ${chapter.part}` : "Email, explained"}
-      kicker={chapter.slug ? <a href="/email-explained">All chapters</a> : undefined}
+      kicker={chapter.slug ? <a href="/email-explained">All chapters</a> : <a href="/docs">All docs</a>}
       title={chapter.title}
       lede={chapter.summary ?? undefined}
     >

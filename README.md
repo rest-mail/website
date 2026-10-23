@@ -27,6 +27,7 @@ it, so a preview lasts from page to page.
 |---|---|
 | `/` | The home page: the pitch, the handshake animation, the API |
 | `/about` | What REST Mail is and why, what it is made of, who makes it |
+| `/docs` | Where every link to documentation goes: Email, explained, and the guides on GitHub to installing and running REST Mail |
 | `/privacy` | The privacy policy, with Google's Limited Use disclosure for Gmail |
 | `/contact` | How to reach the project |
 | `/security` | How to report a vulnerability; `/.well-known/security.txt` says the same for machines (RFC 9116) |

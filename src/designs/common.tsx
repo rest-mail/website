@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 /**
@@ -19,6 +19,8 @@ export const GITHUB = "https://github.com/rest-mail";
 /** The pages every header and footer links to, in every design. */
 export const pages = [
   { to: "/about", label: "About" },
+  // The guide's pages are under Docs too, so the link shows as current there.
+  { to: "/docs", label: "Docs", under: ["/email-explained"] },
   { to: "/privacy", label: "Privacy" },
   { to: "/security", label: "Security" },
   { to: "/contact", label: "Contact" },
@@ -34,7 +36,14 @@ export const Brand = ({ className, children }: { className: string; children: Re
   </Link>
 );
 
-export const PageLinks = ({ home = false }: { home?: boolean }) => (
+const current = { "data-status": "active", "aria-current": "page" } as const;
+
+export const PageLinks = ({ home = false }: { home?: boolean }) => {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  return <PageLinkList home={home} pathname={pathname} />;
+};
+
+const PageLinkList = ({ home, pathname }: { home: boolean; pathname: string }) => (
   <>
     {home && (
       <Link to="/" activeOptions={{ exact: true, includeSearch: false }}>
@@ -42,7 +51,12 @@ export const PageLinks = ({ home = false }: { home?: boolean }) => (
       </Link>
     )}
     {pages.map((page) => (
-      <Link key={page.to} to={page.to} activeOptions={{ includeSearch: false }}>
+      <Link
+        key={page.to}
+        to={page.to}
+        activeOptions={{ includeSearch: false }}
+        {...("under" in page && page.under.some((p) => pathname.startsWith(p)) ? current : {})}
+      >
         {page.label}
       </Link>
     ))}

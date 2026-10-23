@@ -39,6 +39,7 @@ async function page(path) {
 const pages = {
   "/": "/v1/deliver",
   "/about": "About REST Mail",
+  "/docs": "Documentation",
   "/privacy": "Privacy policy",
   "/contact": "Contact",
   "/security": "Reporting a vulnerability",
@@ -56,7 +57,7 @@ describe("every page", () => {
       assert.match(html, /<link rel="stylesheet" href="\/assets\/design-bold-[^"]+\.css"/);
       assert.doesNotMatch(html, /design-safe-|design-experimental-/, "only the live design's stylesheet");
       // The header and footer link every page.
-      for (const other of ["/about", "/privacy", "/security", "/contact"]) assert.ok(html.includes(`href="${other}"`));
+      for (const other of ["/about", "/docs", "/privacy", "/security", "/contact"]) assert.ok(html.includes(`href="${other}"`));
     });
 
     for (const design of ["safe", "experimental"]) {
@@ -168,15 +169,19 @@ describe("Email, explained", () => {
     assert.equal(response.status, 200);
     assert.ok(html.includes("The open relay and the spam machine"));
     for (const id of ["how-common-is-it", "how-rest-mail-handles-it", "sources"]) assert.ok(html.includes(`id="${id}"`), `section ${id}`);
+    // It is one of the docs, so the header's Docs link is the current one.
+    assert.match(html, /<a [^>]*href="\/docs"[^>]*data-status="active"|<a [^>]*data-status="active"[^>]*href="\/docs"/);
     // With no script, the diagram is its static image.
     assert.match(html, /<img src="\/email-explained\/diagrams\/open-relay\.png\?v=[0-9a-f]{12}"/);
     // Code links name the commit the bundle was built from.
     assert.ok(html.includes(`https://github.com/rest-mail/rest-mail-server/blob/${bundle.source.commit}/`));
   });
 
-  test("the front page links its chapters, and an unknown chapter is a 404", async () => {
-    const { html } = await page("/email-explained");
-    assert.ok(html.includes(`href="${chapter}"`));
+  test("the docs page and the guide's front page link its chapters, and an unknown chapter is a 404", async () => {
+    for (const path of ["/docs", "/email-explained"]) {
+      const { html } = await page(path);
+      assert.ok(html.includes(`href="${chapter}"`), `${path} links the chapter`);
+    }
     const { response } = await page("/email-explained/no-such-chapter");
     assert.equal(response.status, 404);
   });

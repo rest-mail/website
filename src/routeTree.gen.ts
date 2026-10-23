@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SecurityRouteImport } from './routes/security'
 import { Route as SecurityDottxtRouteImport } from './routes/security[.]txt'
@@ -36,6 +37,11 @@ const AboutRoute = AboutRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/docs': typeof DocsRoute
   '/privacy': typeof PrivacyRoute
   '/security': typeof SecurityRoute
   '/security.txt': typeof SecurityDottxtRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/docs': typeof DocsRoute
   '/privacy': typeof PrivacyRoute
   '/security': typeof SecurityRoute
   '/security.txt': typeof SecurityDottxtRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/docs': typeof DocsRoute
   '/privacy': typeof PrivacyRoute
   '/security': typeof SecurityRoute
   '/security.txt': typeof SecurityDottxtRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/docs'
     | '/privacy'
     | '/security'
     | '/security.txt'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/docs'
     | '/privacy'
     | '/security'
     | '/security.txt'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/docs'
     | '/privacy'
     | '/security'
     | '/security.txt'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
+  DocsRoute: typeof DocsRoute
   PrivacyRoute: typeof PrivacyRoute
   SecurityRoute: typeof SecurityRoute
   SecurityDottxtRoute: typeof SecurityDottxtRoute
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -311,6 +331,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
+  DocsRoute: DocsRoute,
   PrivacyRoute: PrivacyRoute,
   SecurityRoute: SecurityRoute,
   SecurityDottxtRoute: SecurityDottxtRoute,
