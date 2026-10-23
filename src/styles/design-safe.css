@@ -36,17 +36,18 @@
 .doc-safe .safe-section-label h2 { font-size: calc(var(--safe-text) * 2); }
 .doc-safe .doc-body a:hover { color: var(--accent); }
 
-/* Text grows with the window, and so does its line length; a figure may use
-   the whole grid. */
+/* Text grows with the window, and so does its line length. A diagram is as
+   wide as the text around it. */
 .doc-safe .doc-body { font-size: var(--safe-text); max-width: none; }
 .doc-safe .doc-body p,
 .doc-safe .doc-body li { font-size: var(--safe-text); }
-.doc-safe .doc-body > :not(figure) { max-width: 68ch; }
+.doc-safe .doc-body > * { max-width: 68ch; }
 .doc-safe .doc-body pre { max-width: none; }
 
-/* Email, explained (src/guide/): the introduction and the source line sit
-   where every section's text does, and a diagram spans the grid. */
+/* Email, explained (src/guide/): the introduction, the links to the chapters
+   either side and the source line sit where every section's text does. */
 .doc-safe .guide-intro,
+.doc-safe .guide-pager,
 .doc-safe .guide-source {
   display: grid;
   grid-template-columns: var(--safe-cols);
@@ -55,21 +56,21 @@
   margin: 0;
 }
 .doc-safe .guide-intro > .doc-body,
+.doc-safe .guide-pager > .guide-pager-links,
 .doc-safe .guide-source > .doc-body { grid-column: 2 / -1; margin: 0; }
+.doc-safe .guide-pager { padding-bottom: 0; margin-top: 48px; }
+.doc-safe .guide-pager a { font-size: var(--safe-text); }
 .doc-safe .guide-source > .doc-body { font-size: 14px; }
-.doc-safe .guide-diagram {
-  width: calc(150% + var(--safe-gap) / 2);
-  margin-left: calc(-50% - var(--safe-gap) / 2);
-}
 
 @media (max-width: 960px) {
   .doc-safe .doc-hero,
   .doc-safe .guide-intro,
+  .doc-safe .guide-pager,
   .doc-safe .guide-source { grid-template-columns: 1fr; }
   .doc-safe .doc-lede,
   .doc-safe .guide-intro > .doc-body,
+  .doc-safe .guide-pager > .guide-pager-links,
   .doc-safe .guide-source > .doc-body { grid-column: auto; }
-  .doc-safe .guide-diagram { width: 100%; margin-left: 0; }
 }
 @media (max-width: 600px) {
   .doc-safe .safe-section-label h2 { font-size: 30px; }

@@ -186,6 +186,46 @@ describe("Email, explained", () => {
     assert.equal(response.status, 404);
   });
 
+  test("each chapter links the ones before and after it, in the order the front page lists them", async () => {
+    const order = bundle.chapters.map((c) => (c.slug ? `/email-explained/${c.slug}` : "/email-explained"));
+    for (const [i, path] of order.entries()) {
+      const { html } = await page(path);
+      const prev = html.match(/<a href="([^"]*)" rel="prev"/)?.[1] ?? null;
+      const next = html.match(/<a href="([^"]*)" rel="next"/)?.[1] ?? null;
+      assert.equal(prev, order[i - 1] ?? null, `${path}: previous`);
+      assert.equal(next, order[i + 1] ?? null, `${path}: next`);
+    }
+  });
+
+  test("the docs page lists the chapters under their parts, in reading order", async () => {
+    const { html } = await page("/docs");
+    const parts = [...new Set(bundle.chapters.filter((c) => c.slug).map((c) => c.part))];
+    let from = 0;
+    for (const part of parts) {
+      const at = html.indexOf(`<h3>${part}</h3>`, from);
+      assert.ok(at >= from, `part ${part} in order`);
+      from = at;
+    }
+    let last = -1;
+    for (const c of bundle.chapters.filter((c) => c.slug)) {
+      const at = html.indexOf(`href="/email-explained/${c.slug}"`);
+      assert.ok(at > last, `${c.slug} in order`);
+      last = at;
+    }
+  });
+
+  test("a diagram is no wider than the text it sits in", async () => {
+    const dir = new URL("dist/client/assets/", root);
+    for (const file of (await readdir(dir)).filter((f) => f.endsWith(".css"))) {
+      const css = await readFile(new URL(file, dir), "utf8");
+      for (const [, selectors, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+        if (!/\.guide-diagram(?![-\w])/.test(selectors)) continue;
+        assert.doesNotMatch(body, /(^|;)\s*width:(?!\s*100%)/, `${selectors.trim()} sets another width`);
+        assert.doesNotMatch(body, /margin(-left)?:[^;]*-/, `${selectors.trim()} pulls it out of the column`);
+      }
+    }
+  });
+
   test("a diagram is its own page, framed only by this site, with its typefaces beside it", async () => {
     const response = await get("/email-explained/diagrams/open-relay.html");
     assert.equal(response.status, 200);
