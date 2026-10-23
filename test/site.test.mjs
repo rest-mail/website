@@ -158,6 +158,44 @@ describe("security.txt", () => {
   });
 });
 
+const bundle = JSON.parse(await readFile(new URL("content/email-explained/bundle.json", root), "utf8"));
+
+describe("Email, explained", () => {
+  const chapter = "/email-explained/how-it-goes-wrong/open-relay-and-spam-machine";
+
+  test("a chapter is rendered on the server from the bundle, a section to each heading", async () => {
+    const { response, html } = await page(chapter);
+    assert.equal(response.status, 200);
+    assert.ok(html.includes("The open relay and the spam machine"));
+    for (const id of ["how-common-is-it", "how-rest-mail-handles-it", "sources"]) assert.ok(html.includes(`id="${id}"`), `section ${id}`);
+    // With no script, the diagram is its static image.
+    assert.match(html, /<img src="\/email-explained\/diagrams\/open-relay\.png\?v=[0-9a-f]{12}"/);
+    // Code links name the commit the bundle was built from.
+    assert.ok(html.includes(`https://github.com/rest-mail/rest-mail-server/blob/${bundle.source.commit}/`));
+  });
+
+  test("the front page links its chapters, and an unknown chapter is a 404", async () => {
+    const { html } = await page("/email-explained");
+    assert.ok(html.includes(`href="${chapter}"`));
+    const { response } = await page("/email-explained/no-such-chapter");
+    assert.equal(response.status, 404);
+  });
+
+  test("a diagram is its own page, framed only by this site, with its typefaces beside it", async () => {
+    const response = await get("/email-explained/diagrams/open-relay.html");
+    assert.equal(response.status, 200);
+    const csp = response.headers.get("content-security-policy");
+    assert.match(csp, /frame-ancestors 'self'/);
+    assert.match(csp, /font-src 'self'/);
+    const html = await response.text();
+    assert.doesNotMatch(html, /data:font/, "typefaces are files, which the site's policy allows");
+    const font = html.match(/url\((fonts\/[0-9a-f]{16}\.woff2)\)/)[1];
+    const file = await get(`/email-explained/diagrams/${font}`);
+    assert.equal(file.status, 200);
+    assert.equal(file.headers.get("content-type"), "font/woff2");
+  });
+});
+
 describe("nothing from outside rest-mail.com", () => {
   // Links people can follow are fine; anything a page loads by itself is not.
   test("pages load only their own files, and set no cookies", async () => {
