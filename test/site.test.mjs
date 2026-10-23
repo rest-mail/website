@@ -4,7 +4,7 @@
 // runs, and what a search engine reads.
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { after, before, describe, test } from "node:test";
 
 const root = new URL("../", import.meta.url);
@@ -198,6 +198,25 @@ describe("Email, explained", () => {
     const file = await get(`/email-explained/diagrams/${font}`);
     assert.equal(file.status, 200);
     assert.equal(file.headers.get("content-type"), "font/woff2");
+  });
+});
+
+describe("the site is left-aligned", () => {
+  // Nothing on a page is centred: every block starts on the left margin or on
+  // a column of the page grid. Only text inside a round shape is centred in it.
+  const round = new Set([".hs-peer-label", ".exp-stamp", ".exp-stamp-inner"]);
+
+  test("no stylesheet centres anything but text in a round shape", async () => {
+    const dir = new URL("dist/client/assets/", root);
+    const centred = [];
+    for (const file of (await readdir(dir)).filter((f) => f.endsWith(".css"))) {
+      const css = await readFile(new URL(file, dir), "utf8");
+      for (const [, selectors, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+        if (!/text-align:\s*center|justify-content:\s*center|margin(-inline)?:[^;]*\bauto\b/.test(body)) continue;
+        for (const selector of selectors.split(",").map((s) => s.trim())) if (!round.has(selector)) centred.push(selector);
+      }
+    }
+    assert.deepEqual(centred, []);
   });
 });
 
