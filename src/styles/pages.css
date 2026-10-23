@@ -82,11 +82,17 @@
 .guide-intro { padding: 0 48px 48px; }
 .guide-html > * + * { margin-top: 1em; }
 .guide-source { margin: 48px 0; padding: 0 48px; font-size: 14px; }
-/* As wide as the page allows, from where the text starts. */
-.guide-diagram { margin: 2em 0; width: max(100%, min(1240px, 100vw - 96px)); }
+/* As wide as the text it sits in, no wider. */
+.guide-diagram { margin: 2em 0; width: 100%; }
+/* The chapters before and after this one, in the guide's reading order. */
+.guide-pager { margin: 48px 0 0; padding: 0 48px; }
+.guide-pager-links { display: flex; flex-direction: column; gap: 12px; }
+.guide-pager-links a { display: block; }
+.guide-pager-label { display: block; font: 12px/1.4 var(--mono, monospace); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
 @media (max-width: 600px) {
   .guide-intro { padding: 0 24px 48px; }
   .guide-source { padding: 0 24px; }
+  .guide-pager { padding: 0 24px; }
 }
 .guide-diagram-body img { display: block; width: 100%; height: auto; }
 .guide-diagram-body iframe { display: block; width: 100%; height: 80vh; border: 1px solid var(--ink-3); }

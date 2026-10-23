@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Doc, Section } from "../designs";
 import { GITHUB } from "../designs/common";
-import { bundle } from "../guide/bundle";
+import { parts } from "../guide/bundle";
 
 // Where every link to documentation goes: the guide drawn on this site, and
 // what lives with the code on GitHub.
 
 const docs = `${GITHUB}/rest-mail-server/blob/main/docs`;
-const chapters = bundle.chapters.filter((c) => c.slug);
 
 export const Route = createFileRoute("/docs")({
   head: () => ({
@@ -39,14 +38,19 @@ function Docs() {
         <p>
           <a href="/email-explained">Start at the front page</a>, or go straight to a chapter:
         </p>
-        <ul>
-          {chapters.map((c) => (
-            <li key={c.slug}>
-              <a href={`/email-explained/${c.slug}`}>{c.title}</a>
-              {c.summary && <>: {c.summary}</>}
-            </li>
-          ))}
-        </ul>
+        {parts().map(({ part, chapters }) => (
+          <div key={part} className="docs-part">
+            <h3>{part}</h3>
+            <ul>
+              {chapters.map((c) => (
+                <li key={c.slug}>
+                  <a href={`/email-explained/${c.slug}`}>{c.title}</a>
+                  {c.summary && <>: {c.summary}</>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </Section>
 
       <Section title="Running REST Mail" id="running">

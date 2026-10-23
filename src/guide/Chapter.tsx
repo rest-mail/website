@@ -1,5 +1,5 @@
 import { Doc, Section } from "../designs";
-import { bundle, type Chapter } from "./bundle";
+import { bundle, neighbours, type Chapter } from "./bundle";
 import { Diagram, type Embed } from "./Diagram";
 
 // A chapter's HTML, with its diagrams drawn by the site: the bundle marks each
@@ -37,6 +37,7 @@ export function GuideChapter({ chapter, embed }: { chapter: Chapter; embed: Embe
           <Html html={section.html} embed={embed} />
         </Section>
       ))}
+      <Pager slug={chapter.slug} />
       <footer className="guide-source">
         <p className="doc-body">
         Built from{" "}
@@ -48,5 +49,31 @@ export function GuideChapter({ chapter, embed }: { chapter: Chapter; embed: Embe
         </p>
       </footer>
     </Doc>
+  );
+}
+
+const href = (c: Chapter) => (c.slug ? `/email-explained/${c.slug}` : "/email-explained");
+
+// The chapters before and after this one, so the guide reads as a book.
+function Pager({ slug }: { slug: string }) {
+  const { previous, next } = neighbours(slug);
+  if (!previous && !next) return null;
+  return (
+    <nav className="guide-pager" aria-label="Chapters">
+      <div className="guide-pager-links">
+        {previous && (
+          <a href={href(previous)} rel="prev">
+            <span className="guide-pager-label">Previous</span>
+            {previous.slug ? previous.title : "Contents"}
+          </a>
+        )}
+        {next && (
+          <a href={href(next)} rel="next">
+            <span className="guide-pager-label">{slug ? "Next" : "Start reading"}</span>
+            {next.title}
+          </a>
+        )}
+      </div>
+    </nav>
   );
 }

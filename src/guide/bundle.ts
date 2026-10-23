@@ -36,3 +36,26 @@ export const chapter = (slug: string) => bundle.chapters.find((c) => c.slug === 
 /** Where a diagram's files are on this site, named for the commit they were built from. */
 export const diagramFile = (name: string, ext: "html" | "png") =>
   `/email-explained/diagrams/${name}.${ext}?v=${bundle.source.commit.slice(0, 12)}`;
+
+/**
+ * The chapters either side of one, in the guide's reading order (the order its
+ * front page lists them). The front page comes before the first chapter.
+ */
+export function neighbours(slug: string): { previous: Chapter | null; next: Chapter | null } {
+  const order = bundle.chapters;
+  const at = order.findIndex((c) => c.slug === slug);
+  if (at < 0) return { previous: null, next: null };
+  return { previous: order[at - 1] ?? null, next: order[at + 1] ?? null };
+}
+
+/** The guide's parts, in reading order, each with its chapters. */
+export function parts(): { part: string; chapters: Chapter[] }[] {
+  const out: { part: string; chapters: Chapter[] }[] = [];
+  for (const c of bundle.chapters) {
+    if (!c.slug || !c.part) continue;
+    const last = out.at(-1);
+    if (last?.part === c.part) last.chapters.push(c);
+    else out.push({ part: c.part, chapters: [c] });
+  }
+  return out;
+}
