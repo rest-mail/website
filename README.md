@@ -31,6 +31,7 @@ it, so a preview lasts from page to page.
 | `/contact` | How to reach the project |
 | `/security` | How to report a vulnerability; `/.well-known/security.txt` says the same for machines (RFC 9116) |
 | `/setup` | Where the installer's sign-in link lands (see below) |
+| `/email-explained/…` | Email, explained: the guide rest-mail-server writes, drawn from its content bundle (`content/email-explained/`). A prototype for now: `?embed=` switches how its diagrams are embedded |
 | anything else | A 404 page |
 
 Every page is drawn in all three designs and rendered on the server, so it

@@ -19,6 +19,8 @@ import { Route as SetupRouteImport } from './routes/setup'
 import { Route as DotwellKnownAppleAppSiteAssociationRouteImport } from './routes/[.]well-known/apple-app-site-association'
 import { Route as DotwellKnownMicrosoftIdentityAssociationDotjsonRouteImport } from './routes/[.]well-known/microsoft-identity-association[.]json'
 import { Route as DotwellKnownSecurityDottxtRouteImport } from './routes/[.]well-known/security[.]txt'
+import { Route as EmailExplainedIndexRouteImport } from './routes/email-explained/index'
+import { Route as EmailExplainedSplatRouteImport } from './routes/email-explained/$'
 import { Route as SetupIndexDothtmlRouteImport } from './routes/setup/index[.]html'
 
 const IndexRoute = IndexRouteImport.update({
@@ -74,6 +76,16 @@ const DotwellKnownSecurityDottxtRoute =
     path: '/.well-known/security.txt',
     getParentRoute: () => rootRouteImport,
   } as any)
+const EmailExplainedIndexRoute = EmailExplainedIndexRouteImport.update({
+  id: '/email-explained/',
+  path: '/email-explained/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailExplainedSplatRoute = EmailExplainedSplatRouteImport.update({
+  id: '/email-explained/$',
+  path: '/email-explained/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SetupIndexDothtmlRoute = SetupIndexDothtmlRouteImport.update({
   id: '/index.html',
   path: '/index.html',
@@ -91,7 +103,9 @@ export interface FileRoutesByFullPath {
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
   '/.well-known/microsoft-identity-association.json': typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   '/.well-known/security.txt': typeof DotwellKnownSecurityDottxtRoute
+  '/email-explained/$': typeof EmailExplainedSplatRoute
   '/setup/index.html': typeof SetupIndexDothtmlRoute
+  '/email-explained/': typeof EmailExplainedIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -104,7 +118,9 @@ export interface FileRoutesByTo {
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
   '/.well-known/microsoft-identity-association.json': typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   '/.well-known/security.txt': typeof DotwellKnownSecurityDottxtRoute
+  '/email-explained/$': typeof EmailExplainedSplatRoute
   '/setup/index.html': typeof SetupIndexDothtmlRoute
+  '/email-explained': typeof EmailExplainedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,7 +134,9 @@ export interface FileRoutesById {
   '/.well-known/apple-app-site-association': typeof DotwellKnownAppleAppSiteAssociationRoute
   '/.well-known/microsoft-identity-association.json': typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   '/.well-known/security.txt': typeof DotwellKnownSecurityDottxtRoute
+  '/email-explained/$': typeof EmailExplainedSplatRoute
   '/setup/index.html': typeof SetupIndexDothtmlRoute
+  '/email-explained/': typeof EmailExplainedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -133,7 +151,9 @@ export interface FileRouteTypes {
     | '/.well-known/apple-app-site-association'
     | '/.well-known/microsoft-identity-association.json'
     | '/.well-known/security.txt'
+    | '/email-explained/$'
     | '/setup/index.html'
+    | '/email-explained/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -146,7 +166,9 @@ export interface FileRouteTypes {
     | '/.well-known/apple-app-site-association'
     | '/.well-known/microsoft-identity-association.json'
     | '/.well-known/security.txt'
+    | '/email-explained/$'
     | '/setup/index.html'
+    | '/email-explained'
   id:
     | '__root__'
     | '/'
@@ -159,7 +181,9 @@ export interface FileRouteTypes {
     | '/.well-known/apple-app-site-association'
     | '/.well-known/microsoft-identity-association.json'
     | '/.well-known/security.txt'
+    | '/email-explained/$'
     | '/setup/index.html'
+    | '/email-explained/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -173,6 +197,8 @@ export interface RootRouteChildren {
   DotwellKnownAppleAppSiteAssociationRoute: typeof DotwellKnownAppleAppSiteAssociationRoute
   DotwellKnownMicrosoftIdentityAssociationDotjsonRoute: typeof DotwellKnownMicrosoftIdentityAssociationDotjsonRoute
   DotwellKnownSecurityDottxtRoute: typeof DotwellKnownSecurityDottxtRoute
+  EmailExplainedSplatRoute: typeof EmailExplainedSplatRoute
+  EmailExplainedIndexRoute: typeof EmailExplainedIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -247,6 +273,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotwellKnownSecurityDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/email-explained/': {
+      id: '/email-explained/'
+      path: '/email-explained'
+      fullPath: '/email-explained/'
+      preLoaderRoute: typeof EmailExplainedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email-explained/$': {
+      id: '/email-explained/$'
+      path: '/email-explained/$'
+      fullPath: '/email-explained/$'
+      preLoaderRoute: typeof EmailExplainedSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/setup/index.html': {
       id: '/setup/index.html'
       path: '/index.html'
@@ -280,6 +320,8 @@ const rootRouteChildren: RootRouteChildren = {
   DotwellKnownMicrosoftIdentityAssociationDotjsonRoute:
     DotwellKnownMicrosoftIdentityAssociationDotjsonRoute,
   DotwellKnownSecurityDottxtRoute: DotwellKnownSecurityDottxtRoute,
+  EmailExplainedSplatRoute: EmailExplainedSplatRoute,
+  EmailExplainedIndexRoute: EmailExplainedIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
