@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Handshake from "../Handshake";
-import { Brand, GitHubLink, PageLinks, type DocProps, type DocSectionProps, type Tweaks } from "./common";
+import { Brand, GitHubLink, PageLinks, titleFit, type DocProps, type DocSectionProps, type Tweaks } from "./common";
+import { boldTitleWidths } from "./titleWidths";
 
 
 /**
@@ -236,7 +237,9 @@ export const BoldDoc = ({ eyebrow, kicker, title, lede, children }: DocProps) =>
         </div>
         {kicker && <div className="bold-hero-tag">{kicker}</div>}
       </div>
-      <h1 className="doc-title">{title}</h1>
+      <h1 className="doc-title" style={titleFit(title, boldTitleWidths)}>
+        {title}
+      </h1>
       {lede && (
         <div className="bold-hero-deck doc-lede">
           <p>{lede}</p>

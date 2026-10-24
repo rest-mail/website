@@ -35,11 +35,16 @@
 /* Pages of text (ExperimentalDoc): stamps, a big title, then each section
    filed as a figure, // 01, // 02…, its text on a card. */
 .doc-exp .doc-hero { border-top: none; padding-bottom: 48px; }
+.doc-exp .exp-declass-head { container-type: inline-size; }
 .doc-exp .doc-title {
   font-weight: 700;
-  font-size: clamp(56px, 9vw, 128px);
+  /* Smaller only when its widest word would not fit its column (titleFit). */
+  font-size: min(clamp(56px, 9vw, 128px), calc(100cqi / var(--doc-title-ems, 0.1)));
   line-height: 0.9;
   letter-spacing: -0.04em;
+  /* The display cut at every size: its letters then keep the widths titleFit
+     was measured with. */
+  font-variation-settings: "opsz" 144;
 }
 .doc-exp .doc-stamp-hot {
   border-color: var(--accent);

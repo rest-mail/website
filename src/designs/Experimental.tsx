@@ -1,6 +1,7 @@
 import React, { type CSSProperties, type ReactNode } from "react";
 import Handshake from "../Handshake";
-import { Brand, GitHubLink, PageLinks, type DocProps, type DocSectionProps, type Tweaks } from "./common";
+import { Brand, GitHubLink, PageLinks, titleFit, type DocProps, type DocSectionProps, type Tweaks } from "./common";
+import { experimentalTitleWidths } from "./titleWidths";
 
 
 /**
@@ -310,7 +311,9 @@ export const ExperimentalDoc = ({ eyebrow, kicker, title, lede, children }: DocP
           <span className="exp-stamp-mini">{eyebrow}</span>
           {kicker && <span className="exp-stamp-mini doc-stamp-hot">{kicker}</span>}
         </div>
-        <h1 className="doc-title">{title}</h1>
+        <h1 className="doc-title" style={titleFit(title, experimentalTitleWidths)}>
+          {title}
+        </h1>
         {lede && <p className="exp-declass-sub doc-lede">{lede}</p>}
       </div>
     </header>
