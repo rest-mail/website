@@ -32,7 +32,7 @@ it, so a preview lasts from page to page.
 | `/contact` | How to reach the project |
 | `/security` | How to report a vulnerability; `/.well-known/security.txt` says the same for machines (RFC 9116) |
 | `/setup` | Where the installer's sign-in link lands (see below) |
-| `/email-explained/…` | Email, explained: the guide rest-mail-server writes, drawn from its content bundle (`content/email-explained/`). A prototype for now: `?embed=` switches how its diagrams are embedded |
+| `/email-explained/…` | Email, explained: the guide rest-mail-server writes, drawn from its content bundle (`content/email-explained/`, taken by `release.yml`). A prototype for now: `?embed=` switches how its diagrams are embedded |
 | anything else | A 404 page |
 
 Every page is drawn in all three designs and rendered on the server, so it
@@ -216,10 +216,21 @@ chart changes), and builds the image.
 ## Updating
 
 - Change it in a pull request; CI checks the site, builds the image and renders the chart.
-- To release: set the chart's `appVersion` to the new version in a pull
-  request, then tag the merge commit `vX.Y.Z`. That publishes
-  `ghcr.io/rest-mail/website:X.Y.Z`. It goes live when antimatter-vps moves to
-  the chart that names it.
+- **Email, explained updates itself.** rest-mail-server publishes the guide's
+  bundle as `ghcr.io/rest-mail/email-explained:<version>` whenever its `main`
+  changes the guide. Every 30 minutes `release.yml` checks for a newer one
+  (`scripts/take-bundle.mjs`), and if there is, it typechecks, builds and tests
+  the site with it, commits it to `master` and releases: the next `vX.Y.Z` tag
+  and its image, then the chart pointed at it. Nobody copies the guide across,
+  and nobody edits it here: its words live in rest-mail-server.
+- **To release `master` by hand**, run `release.yml` with "release" ticked. It
+  works out the version from the commits since the last tag (`feat` makes a
+  minor release, anything else a patch; `scripts/release.mjs next`), tags it,
+  publishes the image, and publishes a chart naming it
+  (`scripts/release.mjs chart`).
+- A release goes live when antimatter-vps moves to the chart that names it
+  (`antimatter-vps:restMailWebsite.chartVersion`). Doing that automatically
+  waits on rest-mail/rest-mail-server#826.
 - A change to the chart's templates needs a new chart `version` in
   `charts/website/Chart.yaml` before it can be published: CI refuses to publish
   over a version that exists.
