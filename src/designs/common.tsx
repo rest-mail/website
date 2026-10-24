@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { titleChars, type TitleWidths } from "./titleWidths";
 
 /**
  * What the design tool could vary in each design. Nothing sets these on the
@@ -80,6 +81,23 @@ export type DocProps = {
   lede?: ReactNode;
   children: ReactNode;
 };
+
+/**
+ * How wide a title's widest word is, in ems of the design's title type, from
+ * the widths measured for it (titleWidths.ts). A line can break at a space or
+ * after a hyphen, so those end a word. The design shrinks the title only as
+ * far as that word needs to fit its column (min(..., 100cqi / ...)), so a long
+ * word on a phone is never cut off.
+ */
+export function titleFit(title: ReactNode, widths: TitleWidths): CSSProperties | undefined {
+  if (typeof title !== "string") return undefined;
+  const widest = Math.max(...widths);
+  const width = (word: string) =>
+    [...word].reduce((sum, c) => sum + (widths[titleChars.indexOf(c)] ?? widest), 0) / 1000;
+  const longest = Math.max(0, ...(title.match(/[^\s\-–]+[-–]?/g) ?? []).map(width));
+  // 2% to spare, for rounding.
+  return { "--doc-title-ems": +(longest * 1.02).toFixed(3) } as CSSProperties;
+}
 
 /** One numbered section of a page of text. */
 export type DocSectionProps = {

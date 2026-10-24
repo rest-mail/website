@@ -18,6 +18,7 @@
    (option-safe.css): the title across it, the summary and every section's
    text from its second column. */
 .doc-safe .doc-hero {
+  container-type: inline-size;
   display: grid;
   grid-template-columns: var(--safe-cols);
   column-gap: var(--safe-gap);
@@ -25,7 +26,8 @@
 }
 .doc-safe .doc-title {
   grid-column: 1 / -1;
-  font-size: clamp(48px, 6.67vw, 176px);
+  /* Smaller only when its widest word would not fit its column (titleFit). */
+  font-size: min(clamp(48px, 6.67vw, 176px), calc(100cqi / var(--doc-title-ems, 0.1)));
   font-variation-settings: "opsz" 144, "SOFT" 50;
   letter-spacing: -0.04em;
   max-width: 16ch;

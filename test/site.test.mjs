@@ -214,6 +214,26 @@ describe("Email, explained", () => {
     }
   });
 
+  test("a page title is never cut off: every design shrinks it until its widest word fits", async () => {
+    for (const design of ["safe", "bold", "experimental"]) {
+      const { html } = await page(`/docs?design=${design}`);
+      const ems = html.match(/<h1 class="doc-title" style="--doc-title-ems:([\d.]+)">Documentation<\/h1>/)?.[1];
+      assert.ok(ems > 4 && ems < 9, `${design}: "Documentation" is ${ems} ems wide`);
+    }
+    const dir = new URL("dist/client/assets/", root);
+    let rules = 0;
+    for (const file of (await readdir(dir)).filter((f) => f.endsWith(".css"))) {
+      const css = await readFile(new URL(file, dir), "utf8");
+      for (const [, selectors, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+        if (!/\.doc-title(?![-\w])/.test(selectors) || !/(^|;)\s*font-size:/.test(body)) continue;
+        if (!/\.doc-(safe|bold|exp) /.test(selectors)) continue;
+        assert.match(body, /font-size:\s*min\([^;]*var\(--doc-title-ems/, `${selectors.trim()} sizes the title without fitting it`);
+        rules++;
+      }
+    }
+    assert.ok(rules >= 3, "every design sizes its title");
+  });
+
   test("a diagram is no wider than the text it sits in", async () => {
     const dir = new URL("dist/client/assets/", root);
     for (const file of (await readdir(dir)).filter((f) => f.endsWith(".css"))) {

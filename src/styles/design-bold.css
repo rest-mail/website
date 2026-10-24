@@ -15,11 +15,16 @@
 
 /* Pages of text (BoldDoc): a stamped front page with an oversized title,
    then sections under thick rules, numbered § 01, § 02… */
+.doc-bold .doc-hero { container-type: inline-size; }
 .doc-bold .doc-title {
   font-weight: 700;
-  font-size: clamp(56px, 10vw, 140px);
+  /* Smaller only when its widest word would not fit its column (titleFit). */
+  font-size: min(clamp(56px, 10vw, 140px), calc(100cqi / var(--doc-title-ems, 0.1)));
   line-height: 0.88;
   letter-spacing: -0.05em;
+  /* The display cut at every size, as the home page's title: its letters then
+     keep the widths titleFit was measured with. */
+  font-variation-settings: "opsz" 144, "SOFT" 30;
   margin: 40px 0 32px;
 }
 .doc-bold .doc-num::before { content: "§ " counter(doc-section, decimal-leading-zero); }
@@ -33,5 +38,5 @@
 .doc-bold .doc-body li::marker { color: var(--ink); }
 
 @media (max-width: 600px) {
-  .doc-bold .doc-title { font-size: 15vw; }
+  .doc-bold .doc-title { font-size: min(15vw, calc(100cqi / var(--doc-title-ems, 0.1))); }
 }

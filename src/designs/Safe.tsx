@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Handshake from "../Handshake";
-import { Brand, GitHubLink, PageLinks, type DocProps, type DocSectionProps, type Tweaks } from "./common";
+import { Brand, GitHubLink, PageLinks, titleFit, type DocProps, type DocSectionProps, type Tweaks } from "./common";
+import { safeTitleWidths } from "./titleWidths";
 
 
 /**
@@ -319,7 +320,9 @@ export const SafeDoc = ({ eyebrow, kicker, title, lede, children }: DocProps) =>
       <div className="rm-rule-thin" />
     </section>
     <header className="safe-hero doc-hero">
-      <h1 className="doc-title">{title}</h1>
+      <h1 className="doc-title" style={titleFit(title, safeTitleWidths)}>
+        {title}
+      </h1>
       {lede && (
         <div className="safe-hero-deck doc-lede">
           <p>{lede}</p>
