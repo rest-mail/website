@@ -1,0 +1,151 @@
+name: release
+
+# rest-mail.com releases itself when Email, explained changes. rest-mail-server
+# publishes the guide's bundle whenever its main branch changes the guide
+# (ghcr.io/rest-mail/email-explained, its email-explained.yml). This takes each
+# newer one and releases the site with it: the bundle on master, a v tag and
+# its image, then a chart that deploys it. Run it by hand with "release" ticked
+# to release master as it is, with or without a new bundle.
+#
+# It pushes with this workflow's own token, which starts no workflow by itself,
+# so it runs build.yml (for the tag) and chart.yml itself and waits for each.
+# The site is typechecked, built and tested with the new bundle before
+# anything is pushed, and anything red stops it there.
+#
+# The last step, antimatter-vps deploying the new chart, waits on
+# rest-mail/rest-mail-server#826.
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Release master even if there is no newer guide bundle
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Take the guide's bundle, and release
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Tags and history, to work out the next version.
+          fetch-depth: 0
+
+      # Needs only Node and tar, so it runs before anything is installed, and
+      # most runs end here.
+      - name: Take a newer guide bundle
+        id: bundle
+        run: node scripts/take-bundle.mjs
+
+      - name: Decide whether to release
+        id: plan
+        env:
+          TAKEN: ${{ steps.bundle.outputs.taken }}
+          ASKED: ${{ inputs.release || false }}
+        run: |
+          if [ "$TAKEN" = true ] || [ "$ASKED" = true ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            echo "No newer guide bundle, and no release asked for."
+          fi
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.plan.outputs.go == 'true'
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Typecheck, build and test the site
+        if: steps.plan.outputs.go == 'true'
+        run: |
+          npm ci
+          npm run typecheck
+          npm run build
+          npm test
+
+      - name: Commit the bundle
+        if: steps.plan.outputs.go == 'true' && steps.bundle.outputs.taken == 'true'
+        env:
+          VERSION: ${{ steps.bundle.outputs.version }}
+          COMMIT: ${{ steps.bundle.outputs.commit }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/email-explained public/email-explained
+          git commit -q -m "chore(email-explained): the guide's bundle at $VERSION" \
+            -m "From ghcr.io/rest-mail/email-explained:$VERSION, built from rest-mail/rest-mail-server@$COMMIT."
+          # On top of anything merged since this run checked out.
+          git pull -q --rebase origin master
+          git push origin HEAD:master
+
+      - name: Work out the version
+        id: version
+        if: steps.plan.outputs.go == 'true'
+        run: |
+          set -euo pipefail
+          next=$(node scripts/release.mjs next)
+          if [ -z "$next" ]; then
+            echo "Nothing on master since the last release."
+            echo "next=" >> "$GITHUB_OUTPUT"
+          else
+            echo "Releasing site $next."
+            echo "next=$next" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Tag it, and publish its image
+        if: steps.version.outputs.next != ''
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v$NEXT" -m "rest-mail.com $NEXT"
+          git push origin "v$NEXT"
+          scripts/dispatch-and-wait.sh build.yml "v$NEXT"
+
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        if: steps.version.outputs.next != ''
+        with:
+          version: v3.16.4
+
+      - name: Point the chart at it, and publish the chart
+        id: chart
+        if: steps.version.outputs.next != ''
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          set -euo pipefail
+          chart=$(node scripts/release.mjs chart "$NEXT")
+          charts/website/tests/render-test.sh
+          git add charts/website/Chart.yaml charts/website/tests/render-test.sh
+          git commit -q -m "chore(release): the chart deploys the site at $NEXT"
+          git pull -q --rebase origin master
+          git push origin HEAD:master
+          scripts/dispatch-and-wait.sh chart.yml master
+          echo "chart=$chart" >> "$GITHUB_OUTPUT"
+
+      - name: Say what is left
+        if: steps.chart.outputs.chart != ''
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+          CHART: ${{ steps.chart.outputs.chart }}
+        run: |
+          echo "::notice::Published site $NEXT and chart $CHART (oci://ghcr.io/rest-mail/charts/website). It goes live when antimatter-vps sets antimatter-vps:restMailWebsite.chartVersion to $CHART; doing that automatically waits on rest-mail/rest-mail-server#826."

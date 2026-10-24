@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { diagramFile } from "./bundle";
+import { diagramFile, diagramImage } from "./bundle";
 import { absolute, mountNamespaced } from "./namespaced";
 
 // PROTOTYPE. Eight ways to put an Archify diagram in a page, so they can be
 // compared on the real site, with its stylesheets and its
 // Content-Security-Policy (server.mjs). ?embed= picks one on any chapter.
 //
-// - image:  the static PNG GitHub shows. Nothing to break, nothing to explore.
+// - image:  the static image GitHub shows. Nothing to break, nothing to explore.
 // - iframe: Archify's standalone page, by address, sized to fit.
 // - iframe-embed: the same, in Archify's embed mode: the diagram alone,
 //   without its title, toolbar, cards or index.
@@ -32,7 +32,7 @@ export function Diagram({ name, alt, embed }: { name: string; alt: string; embed
         ))}
       </nav>
       <div id={`diagram-${name}`} className="guide-diagram-body">
-        {embed === "image" && <img src={diagramFile(name, "png")} alt={alt} />}
+        {embed === "image" && <img src={diagramImage(name)} alt={alt} />}
         {embed === "iframe" && <Framed name={name} alt={alt} />}
         {embed === "iframe-embed" && <Framed name={name} alt={alt} bare />}
         {embed === "srcdoc" && <Srcdoc name={name} alt={alt} />}
@@ -90,7 +90,7 @@ const useHtml = (name: string) => {
 
 function Srcdoc({ name, alt }: { name: string; alt: string }) {
   const html = useHtml(name);
-  if (!html) return <img src={diagramFile(name, "png")} alt={alt} />;
+  if (!html) return <img src={diagramImage(name)} alt={alt} />;
   return <iframe srcDoc={html} sandbox="allow-scripts" title={alt} />;
 }
 
@@ -139,7 +139,7 @@ function Mounted({ name, alt, how, instance = name }: { name: string; alt: strin
   }, [html, how]);
   return (
     <div ref={host} className="guide-diagram-host">
-      <img src={diagramFile(name, "png")} alt={alt} />
+      <img src={diagramImage(name)} alt={alt} />
     </div>
   );
 }

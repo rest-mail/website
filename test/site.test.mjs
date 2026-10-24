@@ -171,8 +171,9 @@ describe("Email, explained", () => {
     for (const id of ["how-common-is-it", "how-rest-mail-handles-it", "sources"]) assert.ok(html.includes(`id="${id}"`), `section ${id}`);
     // It is one of the docs, so the header's Docs link is the current one.
     assert.match(html, /<a [^>]*href="\/docs"[^>]*data-status="active"|<a [^>]*data-status="active"[^>]*href="\/docs"/);
-    // With no script, the diagram is its static image.
-    assert.match(html, /<img src="\/email-explained\/diagrams\/open-relay\.png\?v=[0-9a-f]{12}"/);
+    // With no script, the diagram is its static image, the kind the bundle carries.
+    const image = bundle.diagrams.find((d) => d.name === "open-relay").image;
+    assert.ok(html.includes(`<img src="/email-explained/${image}?v=${bundle.source.commit.slice(0, 12)}"`), `the static image ${image}`);
     // Code links name the commit the bundle was built from.
     assert.ok(html.includes(`https://github.com/rest-mail/rest-mail-server/blob/${bundle.source.commit}/`));
   });
