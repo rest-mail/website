@@ -248,6 +248,16 @@ describe("Email, explained", () => {
     }
   });
 
+  test("on a phone a diagram keeps its labels readable and scrolls sideways inside the text's width", async () => {
+    const dir = new URL("dist/client/assets/", root);
+    const css = (await Promise.all((await readdir(dir)).filter((f) => f.endsWith(".css")).map((f) => readFile(new URL(f, dir), "utf8")))).join("\n");
+    // The scroll box takes its width from the text, never from the diagram in it.
+    assert.match(css, /\.guide-diagram-body\{[^}]*overflow-x:auto[^}]*\}/);
+    assert.match(css, /\.guide-diagram-body\{[^}]*contain:inline-size[^}]*\}/);
+    // Only on a phone does the frame keep the readable width Diagram.tsx works out.
+    assert.match(css, /@media \((?:max-width:\s*600px|width\s*<=\s*600px)\)\{\.guide-diagram-body iframe\{min-width:var\(--diagram-readable,\s*100%\)\}\}/);
+  });
+
   test("a diagram is its own page, framed only by this site, with its typefaces beside it", async () => {
     const response = await get("/email-explained/diagrams/open-relay.html");
     assert.equal(response.status, 200);
