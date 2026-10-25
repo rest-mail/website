@@ -40,12 +40,6 @@ export const chapter = (slug: string) => bundle.chapters.find((c) => c.slug === 
 export const diagramFile = (name: string, ext: "html") =>
   `/email-explained/diagrams/${name}.${ext}?v=${bundle.source.commit.slice(0, 12)}`;
 
-/** A diagram's static image, whichever kind the bundle carries (an SVG since bundle 1.0). */
-export const diagramImage = (name: string) => {
-  const image = bundle.diagrams.find((d) => d.name === name)?.image ?? `diagrams/${name}.png`;
-  return `/email-explained/${image}?v=${bundle.source.commit.slice(0, 12)}`;
-};
-
 /**
  * The chapters either side of one, in the guide's reading order (the order its
  * front page lists them). The front page comes before the first chapter.

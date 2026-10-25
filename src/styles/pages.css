@@ -79,8 +79,7 @@
   .doc-body p, .doc-body li { font-size: 17px; }
 }
 
-/* Email, explained (src/guide/). PROTOTYPE: the diagram embeds are compared
-   on the real site before one is chosen. */
+/* Email, explained (src/guide/). */
 .guide-intro { padding: 0 48px 48px; }
 .guide-html > * + * { margin-top: 1em; }
 .guide-source { margin: 48px 0; padding: 0 48px; font-size: 14px; }
@@ -96,7 +95,4 @@
   .guide-source { padding: 0 24px; }
   .guide-pager { padding: 0 24px; }
 }
-.guide-diagram-body img { display: block; width: 100%; height: auto; }
 .guide-diagram-body iframe { display: block; width: 100%; height: 80vh; border: 1px solid var(--ink-3); }
-.guide-embeds { display: flex; gap: 12px; font: 13px/1.4 var(--mono, monospace); margin-bottom: 8px; }
-.guide-embeds a[aria-current="true"] { font-weight: 700; text-decoration: underline; }

@@ -62,9 +62,9 @@ const always = {
   "x-content-type-options": "nosniff",
 };
 
-// PROTOTYPE. Email, explained's diagrams are Archify's standalone pages:
-// inline script and styles, typefaces beside them, and framed by the chapter
-// that shows them. Nothing else, and nothing from anywhere.
+// Email, explained's diagrams are Archify's standalone pages: inline script
+// and styles, typefaces beside them, and framed by the chapter that shows them
+// (src/guide/Diagram.tsx). Nothing else, and nothing from anywhere.
 const diagram = {
   "content-security-policy":
     "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'self'; media-src blob:; frame-ancestors 'self'; base-uri 'none'; form-action 'none'",
