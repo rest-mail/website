@@ -1,24 +1,25 @@
 import { Doc, Section } from "../designs";
 import { bundle, neighbours, type Chapter } from "./bundle";
-import { Diagram, type Embed } from "./Diagram";
+import { Diagram } from "./Diagram";
 
 // A chapter's HTML, with its diagrams drawn by the site: the bundle marks each
-// one with a placeholder figure, which holds the static image GitHub shows.
+// one with a placeholder figure (holding the static image GitHub shows), which
+// becomes the interactive diagram.
 const placeholder = /<figure class="guide-diagram" data-diagram="([a-z0-9-]+)"><img [^>]*alt="([^"]*)"[^>]*><\/figure>/g;
 
-function Html({ html, embed }: { html: string; embed: Embed }) {
+function Html({ html }: { html: string }) {
   const parts = html.split(placeholder);
   const out = [];
   for (let i = 0; i < parts.length; i += 3) {
     if (parts[i].trim()) out.push(<div key={i} className="guide-html" dangerouslySetInnerHTML={{ __html: parts[i] }} />);
-    if (i + 1 < parts.length) out.push(<Diagram key={`d${i}`} name={parts[i + 1]} alt={unescape(parts[i + 2])} embed={embed} />);
+    if (i + 1 < parts.length) out.push(<Diagram key={`d${i}`} name={parts[i + 1]} alt={unescape(parts[i + 2])} />);
   }
   return <>{out}</>;
 }
 
 const unescape = (text: string) => text.replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&amp;/g, "&");
 
-export function GuideChapter({ chapter, embed }: { chapter: Chapter; embed: Embed }) {
+export function GuideChapter({ chapter }: { chapter: Chapter }) {
   const commit = bundle.source.commit;
   return (
     <Doc
@@ -29,12 +30,12 @@ export function GuideChapter({ chapter, embed }: { chapter: Chapter; embed: Embe
     >
       <section className="guide-intro">
         <div className="doc-body">
-          <Html html={chapter.intro} embed={embed} />
+          <Html html={chapter.intro} />
         </div>
       </section>
       {chapter.sections.map((section) => (
         <Section key={section.id} id={section.id} title={<span dangerouslySetInnerHTML={{ __html: section.titleHtml }} />}>
-          <Html html={section.html} embed={embed} />
+          <Html html={section.html} />
         </Section>
       ))}
       <Pager slug={chapter.slug} />

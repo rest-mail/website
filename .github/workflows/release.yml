@@ -12,8 +12,9 @@ name: release
 # The site is typechecked, built and tested with the new bundle before
 # anything is pushed, and anything red stops it there.
 #
-# The last step, antimatter-vps deploying the new chart, waits on
-# rest-mail/rest-mail-server#826.
+# The last step, antimatter-vps deploying the new chart, is the owner's agent's
+# on purpose: no pipeline holds a credential that can deploy
+# (rest-mail/rest-mail-server#826).
 
 on:
   schedule:
@@ -148,4 +149,4 @@ jobs:
           NEXT: ${{ steps.version.outputs.next }}
           CHART: ${{ steps.chart.outputs.chart }}
         run: |
-          echo "::notice::Published site $NEXT and chart $CHART (oci://ghcr.io/rest-mail/charts/website). It goes live when antimatter-vps sets antimatter-vps:restMailWebsite.chartVersion to $CHART; doing that automatically waits on rest-mail/rest-mail-server#826."
+          echo "::notice::Published site $NEXT and chart $CHART (oci://ghcr.io/rest-mail/charts/website). It goes live when the owner's agent moves antimatter-vps:restMailWebsite.chartVersion to $CHART (rest-mail/rest-mail-server#826)."

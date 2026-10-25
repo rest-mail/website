@@ -171,9 +171,10 @@ describe("Email, explained", () => {
     for (const id of ["how-common-is-it", "how-rest-mail-handles-it", "sources"]) assert.ok(html.includes(`id="${id}"`), `section ${id}`);
     // It is one of the docs, so the header's Docs link is the current one.
     assert.match(html, /<a [^>]*href="\/docs"[^>]*data-status="active"|<a [^>]*data-status="active"[^>]*href="\/docs"/);
-    // With no script, the diagram is its static image, the kind the bundle carries.
-    const image = bundle.diagrams.find((d) => d.name === "open-relay").image;
-    assert.ok(html.includes(`<img src="/email-explained/${image}?v=${bundle.source.commit.slice(0, 12)}"`), `the static image ${image}`);
+    // The diagram is Archify's own page in its embed mode, framed, with nothing to choose between.
+    const v = bundle.source.commit.slice(0, 12);
+    assert.ok(html.includes(`<iframe src="/email-explained/diagrams/open-relay.html?v=${v}&amp;embed=1"`), "the framed diagram");
+    assert.ok(!html.includes("guide-embeds"), "no row of embed options");
     // Code links name the commit the bundle was built from.
     assert.ok(html.includes(`https://github.com/rest-mail/rest-mail-server/blob/${bundle.source.commit}/`));
   });

@@ -32,7 +32,7 @@ it, so a preview lasts from page to page.
 | `/contact` | How to reach the project |
 | `/security` | How to report a vulnerability; `/.well-known/security.txt` says the same for machines (RFC 9116) |
 | `/setup` | Where the installer's sign-in link lands (see below) |
-| `/email-explained/…` | Email, explained: the guide rest-mail-server writes, drawn from its content bundle (`content/email-explained/`, taken by `release.yml`). A prototype for now: `?embed=` switches how its diagrams are embedded |
+| `/email-explained/…` | Email, explained: the guide rest-mail-server writes, drawn from its content bundle (`content/email-explained/`, taken by `release.yml`). Each diagram is Archify's own page in its embed mode, in a frame |
 | anything else | A 404 page |
 
 Every page is drawn in all three designs and rendered on the server, so it
@@ -229,8 +229,9 @@ chart changes), and builds the image.
   publishes the image, and publishes a chart naming it
   (`scripts/release.mjs chart`).
 - A release goes live when antimatter-vps moves to the chart that names it
-  (`antimatter-vps:restMailWebsite.chartVersion`). Doing that automatically
-  waits on rest-mail/rest-mail-server#826.
+  (`antimatter-vps:restMailWebsite.chartVersion`). The owner's agent does that,
+  on purpose, gated by the Pulumi preview: no pipeline holds a credential that
+  can deploy (rest-mail/rest-mail-server#826).
 - A change to the chart's templates needs a new chart `version` in
   `charts/website/Chart.yaml` before it can be published: CI refuses to publish
   over a version that exists.
