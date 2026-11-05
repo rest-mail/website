@@ -3,9 +3,9 @@ name: release
 # rest-mail.com releases itself when Email, explained changes. rest-mail-server
 # publishes the guide's bundle whenever its main branch changes the guide
 # (ghcr.io/rest-mail/email-explained, its email-explained.yml). This takes each
-# newer one and releases the site with it: the bundle on master, a v tag and
+# newer one and releases the site with it: the bundle on main, a v tag and
 # its image, then a chart that deploys it. Run it by hand with "release" ticked
-# to release master as it is, with or without a new bundle.
+# to release main as it is, with or without a new bundle.
 #
 # It pushes with this workflow's own token, which starts no workflow by itself,
 # so it runs build.yml (for the tag) and chart.yml itself and waits for each.
@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: Release master even if there is no newer guide bundle
+        description: Release main even if there is no newer guide bundle
         type: boolean
         default: false
 
@@ -93,8 +93,8 @@ jobs:
           git commit -q -m "chore(email-explained): the guide's bundle at $VERSION" \
             -m "From ghcr.io/rest-mail/email-explained:$VERSION, built from rest-mail/rest-mail-server@$COMMIT."
           # On top of anything merged since this run checked out.
-          git pull -q --rebase origin master
-          git push origin HEAD:master
+          git pull -q --rebase origin main
+          git push origin HEAD:main
 
       - name: Work out the version
         id: version
@@ -103,7 +103,7 @@ jobs:
           set -euo pipefail
           next=$(node scripts/release.mjs next)
           if [ -z "$next" ]; then
-            echo "Nothing on master since the last release."
+            echo "Nothing on main since the last release."
             echo "next=" >> "$GITHUB_OUTPUT"
           else
             echo "Releasing site $next."
@@ -138,9 +138,9 @@ jobs:
           charts/website/tests/render-test.sh
           git add charts/website/Chart.yaml charts/website/tests/render-test.sh
           git commit -q -m "chore(release): the chart deploys the site at $NEXT"
-          git pull -q --rebase origin master
-          git push origin HEAD:master
-          scripts/dispatch-and-wait.sh chart.yml master
+          git pull -q --rebase origin main
+          git push origin HEAD:main
+          scripts/dispatch-and-wait.sh chart.yml main
           echo "chart=$chart" >> "$GITHUB_OUTPUT"
 
       - name: Say what is left

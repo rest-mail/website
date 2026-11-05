@@ -1,6 +1,6 @@
 # rest-mail.com
 
-The public-facing website for the **REST Mail** project — served at https://rest-mail.com from the project's own cluster, built from this repository's `master` branch.
+The public-facing website for the **REST Mail** project — served at https://rest-mail.com from the project's own cluster, built from this repository's `main` branch.
 
 REST Mail replaces legacy mail server protocols (SMTP, IMAP, POP3) with a modern REST API. The product source lives at [`rest-mail/rest-mail-server`](https://github.com/rest-mail/rest-mail-server); this repository is **only the marketing site**.
 
@@ -84,7 +84,7 @@ response says so in its `Content-Security-Policy`.
 
 ## Hosting
 
-- **Production:** the project's own cluster, from the image this repository publishes, installed by `charts/website` (see below). Pushing to `master` builds a new image; the deployment says which one is live.
+- **Production:** the project's own cluster, from the image this repository publishes, installed by `charts/website` (see below). Pushing to `main` builds a new image; the deployment says which one is live.
 - **Analytics:** none, and no cookies. The old page carried a Google Analytics tag for a Universal Analytics property, which stopped collecting in July 2023; it went with that page.
 - **Logs:** the server logs no requests (`server.mjs`): it writes a line when it starts and when something fails. `/privacy` says so, so keep it true.
 
@@ -131,7 +131,7 @@ entry in `associatedApplications`.
 
 `charts/website` installs the site: a deployment of the image below, a service,
 and an ingress for the names it answers to. It is published to
-`oci://ghcr.io/rest-mail/charts/website` on every push to `master` that touches
+`oci://ghcr.io/rest-mail/charts/website` on every push to `main` that touches
 it, and pinned by version where it is installed: rest-mail.com's is
 `restMailWebsite.chartVersion` in antimatter-vps's `Pulumi.prod.yaml`, next to
 its `design`. `charts/website/tests/render-test.sh` renders it.
@@ -147,10 +147,10 @@ while it answers `/healthz`.
 
 ## Published image
 
-Tagging `vX.Y.Z` publishes that release to GHCR; every push to `master` refreshes `latest`:
+Tagging `vX.Y.Z` publishes that release to GHCR; every push to `main` refreshes `latest`:
 
 ```
-ghcr.io/rest-mail/website:latest          # newest master build; pin a release instead
+ghcr.io/rest-mail/website:latest          # newest main build; pin a release instead
 ghcr.io/rest-mail/website:X.Y.Z          # a release: git tag vX.Y.Z publishes it
 ```
 
@@ -220,10 +220,10 @@ chart changes), and builds the image.
   bundle as `ghcr.io/rest-mail/email-explained:<version>` whenever its `main`
   changes the guide. Every 30 minutes `release.yml` checks for a newer one
   (`scripts/take-bundle.mjs`), and if there is, it typechecks, builds and tests
-  the site with it, commits it to `master` and releases: the next `vX.Y.Z` tag
+  the site with it, commits it to `main` and releases: the next `vX.Y.Z` tag
   and its image, then the chart pointed at it. Nobody copies the guide across,
   and nobody edits it here: its words live in rest-mail-server.
-- **To release `master` by hand**, run `release.yml` with "release" ticked. It
+- **To release `main` by hand**, run `release.yml` with "release" ticked. It
   works out the version from the commits since the last tag (`feat` makes a
   minor release, anything else a patch; `scripts/release.mjs next`), tags it,
   publishes the image, and publishes a chart naming it
