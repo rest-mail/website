@@ -6,10 +6,13 @@ description: |
   there to take it, and the association file Apple reads to decide the app
   should take it.
 type: application
-# The chart package. Moves when the templates change, not when the site does.
+# The chart package, and below it the site it deploys: a SemVer release of the
+# website repository (git tag v0.2.0 publishes ghcr.io/rest-mail/website:0.2.0).
+# A release stamps both on the commit its v tag holds (scripts/release.mjs), so
+# the released ones are read from the tags. Here on main they say only the last
+# time they were written by hand; raising version here makes it a floor for the
+# next release.
 version: 0.12.7
-# The site this chart deploys: a SemVer release of the website repository
-# (git tag v0.2.0 publishes ghcr.io/rest-mail/website:0.2.0).
 appVersion: "0.12.8"
 home: https://rest-mail.com
 sources:

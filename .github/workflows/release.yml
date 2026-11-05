@@ -3,14 +3,20 @@ name: release
 # rest-mail.com releases itself when Email, explained changes. rest-mail-server
 # publishes the guide's bundle whenever its main branch changes the guide
 # (ghcr.io/rest-mail/email-explained, its email-explained.yml). This takes each
-# newer one and releases the site with it: the bundle on main, a v tag and
-# its image, then a chart that deploys it. Run it by hand with "release" ticked
-# to release main as it is, with or without a new bundle.
+# newer one and releases the site with it: a v tag and its image, then a chart
+# that deploys it. Run it by hand with "release" ticked to release main as it
+# is, with or without a new bundle.
 #
-# It pushes with this workflow's own token, which starts no workflow by itself,
-# so it runs build.yml (for the tag) and chart.yml itself and waits for each.
-# The site is typechecked, built and tested with the new bundle before
-# anything is pushed, and anything red stops it there.
+# main is protected and nothing here pushes to it. A release is one commit on
+# top of main that only its v tag holds: the guide's bundle and the chart's
+# versions, generated for that release. The tag's tree is exactly what shipped,
+# and the next release reads the bundle and the chart's version from it
+# (scripts/release.mjs).
+#
+# It pushes the tag with this workflow's own token, which starts no workflow by
+# itself, so it runs build.yml and chart.yml at the tag and waits for each. The
+# site is typechecked, built and tested with the bundle, and the chart rendered,
+# before anything is pushed, and anything red stops it there.
 #
 # The last step, antimatter-vps deploying the new chart, is the owner's agent's
 # on purpose: no pipeline holds a credential that can deploy
@@ -47,6 +53,11 @@ jobs:
           # Tags and history, to work out the next version.
           fetch-depth: 0
 
+      # Main keeps the copy it last had; the last release's bundle is on its tag.
+      # Whatever goes out next starts from that, never from an older guide.
+      - name: Start from the bundle the last release shipped
+        run: node scripts/release.mjs shipped
+
       # Needs only Node and tar, so it runs before anything is installed, and
       # most runs end here.
       - name: Take a newer guide bundle
@@ -80,68 +91,63 @@ jobs:
           npm run build
           npm test
 
-      - name: Commit the bundle
-        if: steps.plan.outputs.go == 'true' && steps.bundle.outputs.taken == 'true'
-        env:
-          VERSION: ${{ steps.bundle.outputs.version }}
-          COMMIT: ${{ steps.bundle.outputs.commit }}
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add content/email-explained public/email-explained
-          git commit -q -m "chore(email-explained): the guide's bundle at $VERSION" \
-            -m "From ghcr.io/rest-mail/email-explained:$VERSION, built from rest-mail/rest-mail-server@$COMMIT."
-          # On top of anything merged since this run checked out.
-          git pull -q --rebase origin main
-          git push origin HEAD:main
-
       - name: Work out the version
         id: version
         if: steps.plan.outputs.go == 'true'
+        env:
+          TAKEN: ${{ steps.bundle.outputs.taken }}
         run: |
           set -euo pipefail
-          next=$(node scripts/release.mjs next)
+          if [ "$TAKEN" = true ]; then
+            next=$(node scripts/release.mjs next --new-bundle)
+          else
+            next=$(node scripts/release.mjs next)
+          fi
           if [ -z "$next" ]; then
-            echo "Nothing on main since the last release."
+            echo "Nothing new since the last release."
             echo "next=" >> "$GITHUB_OUTPUT"
           else
             echo "Releasing site $next."
             echo "next=$next" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Tag it, and publish its image
-        if: steps.version.outputs.next != ''
-        env:
-          NEXT: ${{ steps.version.outputs.next }}
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "v$NEXT" -m "rest-mail.com $NEXT"
-          git push origin "v$NEXT"
-          scripts/dispatch-and-wait.sh build.yml "v$NEXT"
-
       - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         if: steps.version.outputs.next != ''
         with:
           version: v3.16.4
 
-      - name: Point the chart at it, and publish the chart
+      - name: Make the release, and tag it
         id: chart
         if: steps.version.outputs.next != ''
         env:
           NEXT: ${{ steps.version.outputs.next }}
+          BUNDLE: ${{ steps.bundle.outputs.version }}
         run: |
           set -euo pipefail
           chart=$(node scripts/release.mjs chart "$NEXT")
           charts/website/tests/render-test.sh
-          git add charts/website/Chart.yaml charts/website/tests/render-test.sh
-          git commit -q -m "chore(release): the chart deploys the site at $NEXT"
-          git pull -q --rebase origin main
-          git push origin HEAD:main
-          scripts/dispatch-and-wait.sh chart.yml main
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Off any branch: this commit is the tag's alone.
+          git switch -q --detach
+          git add content/email-explained public/email-explained charts/website/Chart.yaml
+          git commit -q -m "chore(release): rest-mail.com $NEXT" \
+            -m "The guide's bundle at $BUNDLE (ghcr.io/rest-mail/email-explained), chart $chart."
+          git tag -a "v$NEXT" -m "rest-mail.com $NEXT"
+          git push origin "refs/tags/v$NEXT"
           echo "chart=$chart" >> "$GITHUB_OUTPUT"
+
+      - name: Publish its image
+        if: steps.chart.outputs.chart != ''
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: scripts/dispatch-and-wait.sh build.yml "v$NEXT"
+
+      - name: Publish its chart
+        if: steps.chart.outputs.chart != ''
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: scripts/dispatch-and-wait.sh chart.yml "v$NEXT"
 
       - name: Say what is left
         if: steps.chart.outputs.chart != ''
