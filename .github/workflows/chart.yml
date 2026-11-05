@@ -16,7 +16,7 @@ on:
       - "charts/**"
       - ".github/workflows/chart.yml"
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "charts/**"
       - ".github/workflows/chart.yml"
