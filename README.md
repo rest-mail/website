@@ -130,11 +130,13 @@ entry in `associatedApplications`.
 ## The chart
 
 `charts/website` installs the site: a deployment of the image below, a service,
-and an ingress for the names it answers to. It is published to
-`oci://ghcr.io/rest-mail/charts/website` on every push to `main` that touches
-it, and pinned by version where it is installed: rest-mail.com's is
-`restMailWebsite.chartVersion` in antimatter-vps's `Pulumi.prod.yaml`, next to
-its `design`. `charts/website/tests/render-test.sh` renders it.
+and an ingress for the names it answers to. A release publishes it to
+`oci://ghcr.io/rest-mail/charts/website`, and it is pinned by version where it is
+installed: rest-mail.com's is `restMailWebsite.chartVersion` in antimatter-vps's
+`Pulumi.prod.yaml`, next to its `design`. `charts/website/tests/render-test.sh`
+renders it, on every pull request.
+
+A change to the templates reaches a deployment with the next release.
 
 | Value | What |
 |---|---|
@@ -153,6 +155,14 @@ Tagging `vX.Y.Z` publishes that release to GHCR; every push to `main` refreshes 
 ghcr.io/rest-mail/website:latest          # newest main build; pin a release instead
 ghcr.io/rest-mail/website:X.Y.Z          # a release: git tag vX.Y.Z publishes it
 ```
+
+`release.yml` makes the releases, by itself when rest-mail-server publishes a new
+guide bundle. `main` is protected and a release does not commit to it: its bundle
+and its chart's versions go on one commit that only its `vX.Y.Z` tag holds, so
+that tag's tree is what shipped. The copies on `main` stay as they were last
+written, which means `main`, `latest` and pull requests show an older guide than
+the released site does. `node scripts/take-bundle.mjs` brings in the newest, in a
+pull request like any other change, for anyone who wants to work against it.
 
 The image is `node:24-alpine` running `server.mjs` on port 3000, as the
 unprivileged `node` user. Its environment:
