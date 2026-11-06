@@ -12,8 +12,8 @@ type: application
 # the released ones are read from the tags. Here on main they say only the last
 # time they were written by hand; raising version here makes it a floor for the
 # next release.
-version: 0.12.7
-appVersion: "0.12.8"
+version: 0.12.9
+appVersion: "0.12.10"
 home: https://rest-mail.com
 sources:
   - https://github.com/rest-mail/website
