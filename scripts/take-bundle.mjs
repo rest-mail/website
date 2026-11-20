@@ -95,6 +95,26 @@ export async function fetchBundle(version, token, repository = REPOSITORY) {
   return { dir, bundle: join(dir, "bundle") };
 }
 
+/** What a run does with what the registry said, or throws when it cannot know.
+ *
+ * A refusal is not "nothing newer". ghcr answers 403 both for a private package
+ * and for one that does not exist yet, so a site that already reads a bundle and
+ * is refused has lost the ability to see updates - and reporting "nothing newer"
+ * leaves it stale for as long as the package stays private, with a green run
+ * every half hour. That is the failure this function exists to make impossible:
+ * once a bundle is vendored, a refused registry is an error, not a quiet no-op.
+ */
+export function decide(have, latest, refused) {
+  if (refused && have) {
+    throw new Error(
+      `ghcr.io/${REPOSITORY} refused an anonymous read (HTTP ${refused}) while this site already reads bundle ${have}, ` +
+        `so it cannot tell whether a newer one exists. Make the package public (organisation packages, Package settings).`,
+    );
+  }
+  if (!latest || (have && compare(latest, have) <= 0)) return "nothing";
+  return "take";
+}
+
 async function main() {
   const { values } = parseArgs({ options: { check: { type: "boolean", default: false } } });
   const output = (pairs) => process.env.GITHUB_OUTPUT && appendFileSync(process.env.GITHUB_OUTPUT, Object.entries(pairs).map(([k, v]) => `${k}=${v}\n`).join(""));
@@ -103,7 +123,7 @@ async function main() {
   const { token, tags, refused } = await published();
   const latest = newest(tags);
   const have = current.version ?? null;
-  if (!latest || (have && compare(latest, have) <= 0)) {
+  if (decide(have, latest, refused) === "nothing") {
     const none = refused ? `ghcr.io/${REPOSITORY} has nothing public (HTTP ${refused})` : `newest of format ${FORMAT}: ${latest ?? "none"}`;
     console.log(`The guide's bundle here is ${have ?? "unversioned"}; nothing newer is published (${none}).`);
     output({ taken: false, version: have ?? "" });
