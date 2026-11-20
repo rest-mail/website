@@ -9,7 +9,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { bump, lastRelease, levelBetween, levelFor, pointChart } from "../scripts/release.mjs";
-import { compare, FORMAT, newest, plan } from "../scripts/take-bundle.mjs";
+import { compare, decide, FORMAT, newest, plan } from "../scripts/take-bundle.mjs";
 
 test("a feat commit makes a minor release, a breaking one too while the site is 0.x, anything else a patch", () => {
   assert.equal(levelFor(["fix: a page title is never cut off", "chore(email-explained): the guide's bundle at 1.0.2950"], "0.10.0"), "patch");
@@ -187,4 +187,19 @@ test("a release starts from the bundle the last one shipped, unless main's copy 
   } finally {
     r.done();
   }
+});
+
+// The site was stale for weeks because a refused registry read was reported as
+// "nothing newer", which is a green run every half hour. Once a bundle is
+// vendored, a refusal means the site can no longer see updates: it is an error.
+test("a refused registry is an error once a bundle is vendored, and only then", () => {
+  assert.equal(decide("1.0.868", "1.0.1393", undefined), "take");
+  assert.equal(decide("1.0.868", "1.0.868", undefined), "nothing");
+  assert.equal(decide("1.0.868", "1.0.1000", undefined), "take");
+  assert.equal(decide(null, "1.0.868", undefined), "take");
+  assert.throws(() => decide("1.0.868", null, 403), /refused an anonymous read \(HTTP 403\)/);
+  assert.throws(() => decide("1.0.868", null, 401), /Make the package public/);
+  // A site that has never vendored a bundle may legitimately see 403 from a
+  // package that does not exist yet, so that case stays a quiet no-op.
+  assert.equal(decide(null, null, 403), "nothing");
 });
